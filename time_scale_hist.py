@@ -58,28 +58,31 @@ def main(args):
 
         all_hist_data = []
 
-        bins = tuple([n_bins])
-        range_ = tuple([tuple([-180., 180.])])
-
-        frames_counts = []
-        for i in range(1, increments + 1):
-            n_frames = line_increment * i
-            frames_counts.append(n_frames)
-            hist, _ = np.histogramdd([data[:n_frames]], range=range_, bins=bins)
-            hist = normalize_hist(hist, line_increment * i)
-            all_hist_data += list(hist)
-        if args.final:
-            hist, _ = np.histogramdd([data], range=range_, bins=bins)
-            hist = normalize_hist(hist, len(data))
-            all_hist_data += list(hist)
-            increments += 1
-            frames_counts.append("final")
-            n_frames = len(data)
         title = args.file.strip('.xvg').split("/")[-1] + " angle distributions"
+
         if args.hist3d:
+            bins = tuple([n_bins])
+            range_ = tuple([tuple([-180., 180.])])
+            frames_counts = []
+            for i in range(1, increments + 1):
+                n_frames = line_increment * i
+                frames_counts.append(n_frames)
+                hist, _ = np.histogramdd([data[:n_frames]], range=range_, bins=bins)
+                hist = normalize_hist(hist, line_increment * i)
+                all_hist_data += list(hist)
+            if args.final:
+                hist, _ = np.histogramdd([data], range=range_, bins=bins)
+                hist = normalize_hist(hist, len(data))
+                all_hist_data += list(hist)
+                increments += 1
+                frames_counts.append("final")
+
             make_3dhist(n_bins, increments, all_hist_data, frames_counts, title)
+
+
         else:
-            plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[bins[0], 180])
+            n_frames = line_increment * increments + 1
+            plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[n_bins, 180])
             plt.title(title)
             plt.xlabel('frames')
             plt.ylabel('angle')
