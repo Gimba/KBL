@@ -56,6 +56,8 @@ def main(args):
         increments = int(args.increments)
         n_bins = int(args.bins)
 
+    out_file = args.file.replace('.xvg', '.png')
+
     with open(args.file, 'r') as f:
 
         data = []
@@ -99,7 +101,11 @@ def main(args):
         if args.show:
             plt.show()
         else:
-            plt.savefig(args.file.replace('.xvg', '.png'))
+            if args.hist3d:
+                out_file = out_file.split('/')
+                out_file = '/'.join(out_file[:-1]) + '/hist3d.' + out_file[-1]
+            plt.savefig(out_file)
+            print('saved plot to:', out_file)
 
 
 
