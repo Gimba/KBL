@@ -78,6 +78,7 @@ def main(args):
         dir2_name = dir2.split('/')
 
         # if the directories do not differ in their last path-dir us the second last dir for naming
+        # e.g.: somedir/naming_dir1/subdir; somedir/naming_dir2/subdir
         if dir1_name[-2] == dir2_name[-2]:
             kbl_filename = \
                 'kbl_' + dir1_name[-3] + '_' + dir2_name[-3] + '_' + args.angles.replace(',', '_') + '.pymol'
@@ -89,6 +90,7 @@ def main(args):
         kbl_filename = kbl_filename.split('.')
         kbl_filename = kbl_filename[0] + "_" + args.suffix + "." + kbl_filename[1]
 
+    # filenames for histogram and its data (data sorted descending by kbl value)
     hist_dat_filename = 'hist.' + kbl_filename.replace('.pymol', '.dat')
     hist_png_filename = 'hist.' + kbl_filename.replace(".pymol", '.png')
 
@@ -142,7 +144,7 @@ def main(args):
     if args.show:
         plt.show()
 
-    # KBL by values
+    # sort KBL values for saving in hist data file
     kbl_sorted = sorted(kbl.items(), key=operator.itemgetter(1), reverse=True)
 
     # write histogram data to file
