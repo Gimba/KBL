@@ -32,10 +32,12 @@ def normalize_hist(hist, lines):
 
 def main(args):
     parser = argparse.ArgumentParser(description='Make a plot of how a distribution changes over time. Can be used to how distributions change over time.')
-    parser.add_argument('file', help='input file in .xvg format')
-    parser.add_argument('line_increment', help='increase the number of lines to read in by this parameter')
-    parser.add_argument('increments', help='how often the number of lines should get bigger')
-    parser.add_argument('bins', help='bins of the histogram')
+    parser.add_argument('-f', dest='file', help='input file in .xvg format')
+    parser.add_argument('-b', dest='bins', help='bins of the histogram', default=False)
+    parser.add_argument('-li', dest='line_increment', nargs='?', help='increase the number of lines to read in by '
+                                                                      'this parameter', default=False)
+    parser.add_argument('-i', dest='increments', nargs='?', help='how often the number of lines should get bigger',
+                        default=False)
     parser.add_argument('-final', dest='final', action='store_true', help='show histogram of all the lines')
     parser.add_argument('-hist3d', dest='hist3d', action='store_true', help='make 3d histogram, if not set make 2d '
                                                                             'histogram', default=False)
@@ -43,9 +45,16 @@ def main(args):
                         default=False)
     args = parser.parse_args()
 
-    line_increment = int(args.line_increment)
-    increments = int(args.increments)
-    n_bins = int(args.bins)
+    if not (args.bins or args.increments or args.line_increment):
+        print('using default settings for parameters bins (30), increments (10) and line_increment (2000)')
+        line_increment = 2000
+        increments = 10
+        n_bins = 30
+
+    else:
+        line_increment = int(args.line_increment)
+        increments = int(args.increments)
+        n_bins = int(args.bins)
 
     with open(args.file, 'r') as f:
 
