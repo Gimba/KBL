@@ -39,6 +39,8 @@ def main(args):
     parser.add_argument('-final', dest='final', action='store_true', help='show histogram of all the lines')
     parser.add_argument('-hist3d', dest='hist3d', action='store_true', help='make 3d histogram, if not set make 2d '
                                                                             'histogram', default=False)
+    parser.add_argument('-show', dest='show', action='store_true', help='show plot instead of saving to file',
+                        default=False)
     args = parser.parse_args()
 
     line_increment = int(args.line_increment)
@@ -76,13 +78,16 @@ def main(args):
         title = args.file.strip('.xvg').split("/")[-1] + " angle distributions"
         if args.hist3d:
             make_3dhist(n_bins, increments, all_hist_data, frames_counts, title)
-            plt.show()
         else:
             plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[bins[0], 180])
             plt.title(title)
             plt.xlabel('frames')
             plt.ylabel('angle')
+
+        if args.show:
             plt.show()
+        else:
+            plt.savefig(args.file.replace('.xvg', '.png'))
 
 
 
