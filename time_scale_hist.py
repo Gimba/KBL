@@ -19,11 +19,14 @@ import argparse
 import sys
 
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import numpy as np
 
 from mpl_toolkits.mplot3d import axes3d, Axes3D
 from hist_3D_lib import make_3dhist
 
+color_map = 'viridis'
+plt.rcParams['axes.facecolor'] = cm.get_cmap(color_map)(0)
 
 def normalize_hist(hist, lines):
     hist = list(np.asarray(hist) / lines)
@@ -67,6 +70,8 @@ def main(args):
                 continue
             data.append(float(line.split()[1]))
 
+        if len(data) < increments * line_increment:
+            line_increment = len(data) // increments
         all_hist_data = []
 
         title = args.file.strip('.xvg').split("/")[-1] + " angle distributions"
@@ -92,8 +97,9 @@ def main(args):
 
 
         else:
-            n_frames = line_increment * increments + 1
-            plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[n_bins, 180])
+            n_frames = line_increment * increments
+            plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[n_bins, 180], cmap=color_map)
+            plt.ylim(-180, 180)
             plt.title(title)
             plt.xlabel('frames')
             plt.ylabel('angle')
