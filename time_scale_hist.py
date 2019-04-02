@@ -21,6 +21,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
+from mpl_toolkits.mplot3d import axes3d, Axes3D
 from hist_3D_lib import make_3dhist
 
 
@@ -75,8 +76,9 @@ def main(args):
         title = args.file.strip('.xvg').split("/")[-1] + " angle distributions"
         if args.hist3d:
             make_3dhist(n_bins, increments, all_hist_data, frames_counts, title)
+            plt.show()
         else:
-            plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[n_frames / 100, 180])
+            plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[bins[0], 180])
             plt.title(title)
             plt.xlabel('frames')
             plt.ylabel('angle')
