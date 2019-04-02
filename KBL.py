@@ -15,11 +15,14 @@
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Kullback_Leibler_lib as k
-import matplotlib.pyplot as plt
-import sys, argparse
-from argparse import RawTextHelpFormatter
+import argparse
 import operator
+import sys
+from argparse import RawTextHelpFormatter
+
+import matplotlib.pyplot as plt
+
+import Kullback_Leibler_lib as k
 
 
 def main(args):
@@ -50,6 +53,7 @@ def main(args):
                                                              'calculation', default=False)
     parser.add_argument('-y_range', nargs='?', help='lower and upper bound for y-axis, used to make different kbl '
                                                     'calculations comperable')
+    parser.add_argument('-suff', dest='suffix', nargs='?', help='add suffix to file names', default=False)
 
     args = parser.parse_args()
 
@@ -81,8 +85,12 @@ def main(args):
             kbl_filename = \
                 'kbl_' + dir1_name[-2] + '_' + dir2_name[-2] + '_' + args.angles.replace(',', '_') + '.pymol'
 
+    if args.suffix:
+        kbl_filename = kbl_filename.split('.')
+        kbl_filename = kbl_filename[0] + "_" + args.suffix + "." + kbl_filename[1]
+
     hist_dat_filename = 'hist.' + kbl_filename.replace('.pymol', '.dat')
-    hist_png_filename = 'hist.' + kbl_filename.replace(".pymol", "") + '.png'
+    hist_png_filename = 'hist.' + kbl_filename.replace(".pymol", '.png')
 
     mutations = args.mutations.split(',')
 
