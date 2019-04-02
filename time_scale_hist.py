@@ -15,8 +15,12 @@
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import sys, argparse, os
+import argparse
+import sys
+
+import matplotlib.pyplot as plt
 import numpy as np
+
 from hist_3D_lib import make_3dhist
 
 
@@ -32,6 +36,8 @@ def main(args):
     parser.add_argument('increments', help='how often the number of lines should get bigger')
     parser.add_argument('bins', help='bins of the histogram')
     parser.add_argument('-final', dest='final', action='store_true', help='show histogram of all the lines')
+    parser.add_argument('-hist3d', dest='hist3d', action='store_true', help='make 3d histogram, if not set make 2d '
+                                                                            'histogram', default=False)
     args = parser.parse_args()
 
     line_increment = int(args.line_increment)
@@ -65,8 +71,17 @@ def main(args):
             all_hist_data += list(hist)
             increments += 1
             frames_counts.append("final")
+            n_frames = len(data)
         title = args.file.strip('.xvg').split("/")[-1] + " angle distributions"
-        make_3dhist(n_bins, increments, all_hist_data, frames_counts, title)
+        if args.hist3d:
+            make_3dhist(n_bins, increments, all_hist_data, frames_counts, title)
+        else:
+            plt.hist2d(np.arange(0, n_frames), data[:n_frames], bins=[n_frames / 100, 180])
+            plt.title(title)
+            plt.xlabel('frames')
+            plt.ylabel('angle')
+            plt.show()
+
 
 
 if __name__ == '__main__':
