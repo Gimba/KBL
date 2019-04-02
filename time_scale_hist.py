@@ -46,6 +46,7 @@ def main(args):
                                                                             'histogram', default=False)
     parser.add_argument('-show', dest='show', action='store_true', help='show plot instead of saving to file',
                         default=False)
+    parser.add_argument('-pre', nargs='?', help='text that appears before the title', default="")
     args = parser.parse_args()
 
     if not (args.bins or args.increments or args.line_increment):
@@ -61,6 +62,8 @@ def main(args):
 
     out_file = args.file.replace('.xvg', '.png')
 
+    title = args.pre + args.file.strip('.xvg').split("/")[-1]
+
     with open(args.file, 'r') as f:
 
         data = []
@@ -73,8 +76,6 @@ def main(args):
         if len(data) < increments * line_increment:
             line_increment = len(data) // increments
         all_hist_data = []
-
-        title = args.file.strip('.xvg').split("/")[-1] + " angle distributions"
 
         if args.hist3d:
             bins = tuple([n_bins])
