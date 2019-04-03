@@ -36,6 +36,7 @@ def normalize_hist(hist, lines):
 def main(args):
     parser = argparse.ArgumentParser(description='Make a plot of how a distribution changes over time. Can be used to how distributions change over time.')
     parser.add_argument('-f', dest='file', help='input file in .xvg format')
+    # TODO: change bins to ybins and li,i to xbins
     parser.add_argument('-b', dest='bins', help='bins of the histogram', default=False)
     parser.add_argument('-li', dest='line_increment', nargs='?', help='increase the number of lines to read in by '
                                                                       'this parameter', default=False)
@@ -49,16 +50,7 @@ def main(args):
     parser.add_argument('-pre', nargs='?', help='text that appears before the title', default="")
     args = parser.parse_args()
 
-    if not (args.bins or args.increments or args.line_increment):
-        print('using default settings for parameters bins (30), increments (10) and line_increment (2000)')
-        line_increment = 2000
-        increments = 10
-        n_bins = 30
 
-    else:
-        line_increment = int(args.line_increment)
-        increments = int(args.increments)
-        n_bins = int(args.bins)
 
     out_file = args.file.replace('.xvg', '.png')
 
@@ -72,6 +64,18 @@ def main(args):
             if '@' in line or '#' in line:
                 continue
             data.append(float(line.split()[1]))
+
+        if not (args.bins or args.increments or args.line_increment):
+            increments = 10
+            line_increment = len(data) // increments
+            n_bins = 30
+            print('using default settings for parameters bins (30), increments (10) and calculated line_increment (' +
+                  str(line_increment) + ')')
+
+        else:
+            line_increment = int(args.line_increment)
+            increments = int(args.increments)
+            n_bins = int(args.bins)
 
         if len(data) < increments * line_increment:
             line_increment = len(data) // increments
