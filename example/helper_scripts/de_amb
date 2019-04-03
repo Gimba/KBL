@@ -1,0 +1,37 @@
+
+usage="de_amb: version 1.0 07.06.2017, Martin Rosellen
+
+Reverts the changes to 3 letter residue codes made by pdb4amber script. Writes changes to de_amb.log
+
+usage: de_amb <input_pdb_name> <output_pdb_name> or -h 
+
+where:
+<input_pdb_name>		existing pdb
+<output_pdb_name>		pdb that gets created(cannot be the same as input_pdb_name)
+
+-h       	show this help text"
+
+while getopts ':hs:' option; do
+	case "$option" in
+		h) echo "$usage"
+		exit
+		;;
+	esac
+done
+
+if [ "$#" != 2 ]; then
+	echo "$usage"
+	echo "
+	!!! illegal number of arguments !!!"
+	exit
+fi
+
+cp $1 $2
+sed -i 's/HID/HIS/g' $2 
+sed -i 's/HIE/HIS/g' $2
+sed -i 's/HIP/HIS/g' $2
+sed -i 's/CYX/CYS/g' $2
+
+rm -rf de_amb.log 
+
+diff $1 $2 > de_amb.log

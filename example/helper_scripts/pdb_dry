@@ -1,0 +1,11 @@
+prmtop="$(ls -S *.prmtop | head -1)"
+inpcrd="$(ls -S *.inpcrd | head -1)"
+
+out=$1
+
+echo "strip :WAT,Cl-
+trajout ${1}" > temp.cpptraj
+
+cpptraj -p $prmtop -i temp.cpptraj -y $inpcrd
+
+rm -rf temp.cpptraj

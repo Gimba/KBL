@@ -1,0 +1,46 @@
+
+# requires AmberTools18
+
+# generates a .trr file (gromacs format) from all .nc (amber format) files found in the folder. .nc files are expected to have the format prod_{number}.nc (e.g. prod_1.nc, prod_2.nc ...). 
+# The order in which .nc files are combined in the .trr file is ascending by the number (prod_{number}.nc) of the .nc file. It is not expected that there are missing numbers.
+
+prmtop=$1
+inpcrd=$2
+
+# get finished trajectory with highest number
+files=$( ls *.nc )
+max=0
+for f in $files ; do
+  temp=$(echo $f | cut -d'_' -f 2 | cut -d '.' -f 1)
+  if (( temp > max )); then
+  	max=$temp
+  fi
+done
+
+size_max=$(wc -c <"prod_${max}.nc")
+
+# check if the trajectory with the highest number has the same size as the trajectory with the second highest number. 
+# This is done so that only properly finished trajectories are considered.
+
+second_largest=`expr $max - 1`
+if (( second_largest > 0 )); then
+	size_second_largest=$(wc -c <"prod_${second_largest}.nc")
+	if (( size_second_largest > size_max )); then
+	max=$second_largest
+	fi
+fi
+
+echo "largest finished trajectory:" $max
+
+# create cpptraj infile
+rm -rf create_trr.cpptraj
+
+for i in $(seq 1 $max); do 
+	echo "trajin prod_${i}.nc" >> create_trr.cpptraj
+done
+
+echo "trajout gromacs_${max}_max.trr" >> create_trr.cpptraj
+echo "go" >> create_trr.cpptraj
+
+# run cpptraj to create trr file
+cpptraj -p $prmtop -i create_trr.cpptraj -y $inpcrd

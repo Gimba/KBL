@@ -1,0 +1,36 @@
+
+# requires gromacs v2018.0
+# generates files with the values of phi psi and chi1 angles throughout a simulation whose trajectory is stored in .trr format
+
+prmtop=$1
+
+model=${prmtop%.prmtop}
+
+inpcrd=${model}.inpcrd
+
+pdb=${model}.pdb
+
+# create a pdb
+../helper_scripts/pdb_dry ${model}_.pdb
+
+# pdb might contain amber specific residue naming (CYX, CYS etc.). de_amb takes care that residue names are consistent
+../helper_scripts/de_amb ${model}_.pdb $pdb
+
+rm -rf ${model}_.pdb
+
+# look for .trr file containing 'max' (which is expected to be the .trr file that takes into account all trajectories found)
+trr="$(ls -S *max.trr | head -1)"
+
+# if not found create .trr file
+if [[ ! -f $trr ]] ; then
+	../helper_scripts/create_trr_max $prmtop $inpcrd
+fi
+trr="$(ls -S *max.trr | head -1)"
+
+rm -rf gromacs_psi_phi_chi_max
+
+mkdir gromacs_psi_phi_chi_max
+
+cd gromacs_psi_phi_chi_max
+
+gmx chi -s ../${pdb} -f ../${trr} -all -maxchi 1 -phi -psi -nonormhisto
