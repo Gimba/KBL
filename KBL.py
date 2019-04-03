@@ -61,6 +61,12 @@ def main(args):
     dir1 = args.dir1.strip('\'')
     dir2 = args.dir2.strip('\'')
 
+    # add / as last character of directories if missing
+    if dir1[-1] != '/':
+        dir1 += '/'
+    if dir2[-1] != '/':
+        dir2 += '/'
+
     residues = []
     if args.resids:
         residues = list(map(int, args.resids.split(',')))
