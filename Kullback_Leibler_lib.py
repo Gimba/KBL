@@ -33,21 +33,20 @@ def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list =
     res_type = ''.join([i for i in res if not i.isdigit()])
 
     # generate list with file names
-    files = []
-    for angle in angles:
-        ## leave out files for specified angles and residues
-        if not (angle in excluded_angles and res_type in excluded_types):
-            files.append(path + angle + res + '.xvg')
-        else:
-            print('omitting file', path + angle + res + '.xvg')
+    trajectories = ['productions/prod_1.nc']
 
-    # read in data from files
+    # for angle in angles:
+    #     ## leave out files for specified angles and residues
+    #     if not (angle in excluded_angles and res_type in excluded_types):
+    #         files.append(path + angle + res + '.xvg')
+    #     else:
+    #         print('omitting file', path + angle + res + '.xvg')
+    # # read in data from files
     file_tuple = []
-    for file in files:
-        f = open(file)
-        file_tuple.append(f.readlines())
-        f.close()
-    file_tuple = tuple(file_tuple)
+    #     f = open(file)
+    #     file_tuple.append(f.readlines())
+    #     f.close()
+    # file_tuple = tuple(file_tuple)
 
     # extract angle values from file contents
     all_angles = []
@@ -60,13 +59,29 @@ def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list =
 
     return all_angles
 
+def extract_angles(files, residues, angles):
+    """
+
+    :param files: trajectories
+    :param residues: range of residues given in cpptraj convention
+    :param angles:
+    :return:
+    """
+    # "-1" needed for conversion between python convention (starts with 0) and cpptraj convention (starts with 1)
+    residues = [int(r[3:]) - 1 for r in residues]
+    traj = pt.TrajectoryIterator(files, "native_hex.prmtop")
+    data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=residues)
+    # traj = pt.load("native_hex.prmtop", "productions/prod_1.nc")
+    # for a in angles:
+    exit()
+    return(data)
 
 def get_residue_names_from_file(dir: "", angle: list) -> list:
     traj = pt.load('native_hex.inpcrd', 'native_hex.prmtop')
     traj.strip(":WAT,CL-")
     resids = []
     for t in traj.top.residues:
-        resids.append(t.name + str(t.index))
+        resids.append(t.name + str(t.original_resid))
     return resids
 
 
@@ -130,10 +145,12 @@ def read_in_data(dir1: "", dir2: "", end1: int = 999999999, end2: int = 99999999
         else:
             add_mutation_res()
 
-    for res in angle_mutual_residues[angles[0]]:
-        dir1_angles = np.array(read_1_set(dir1, end1, res, angles)).T
-        dir2_angles = np.array(read_1_set(dir2, end2, res, angles)).T
-        data[res] = (dir1_angles, dir2_angles)
+    # for res in angle_mutual_residues[angles[0]]:
+    dir1_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
+    dir2_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
+        # dir1_angles = np.array(read_1_set(dir1, end1, res, angles)).T
+        # dir2_angles = np.array(read_1_set(dir2, end2, res, angles)).T
+    data = (dir1_angles, dir2_angles)
 
     return data
 
