@@ -71,10 +71,12 @@ def extract_angles(files, residues, angles):
     residues = [int(r[3:]) - 1 for r in residues]
     traj = pt.TrajectoryIterator(files, "native_hex.prmtop")
     data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=residues)
-    # traj = pt.load("native_hex.prmtop", "productions/prod_1.nc")
-    # for a in angles:
-    exit()
-    return(data)
+    # convert data to dictionnary
+    data_dict = {}
+    for k in data.keys():
+        # TODO: map keys back to residue names
+        data_dict[k] = list(data[k].values)
+    return(data_dict)
 
 def get_residue_names_from_file(dir: "", angle: list) -> list:
     traj = pt.load('native_hex.inpcrd', 'native_hex.prmtop')
@@ -147,9 +149,11 @@ def read_in_data(dir1: "", dir2: "", end1: int = 999999999, end2: int = 99999999
 
     # for res in angle_mutual_residues[angles[0]]:
     dir1_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
+
     dir2_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
-        # dir1_angles = np.array(read_1_set(dir1, end1, res, angles)).T
-        # dir2_angles = np.array(read_1_set(dir2, end2, res, angles)).T
+    # TODO: adjust object types to match the ones used before pytraj
+    # dir1_angles = np.array(read_1_set(dir1, end1, res, angles)).T
+    # dir2_angles = np.array(read_1_set(dir2, end2, res, angles)).T
     data = (dir1_angles, dir2_angles)
 
     return data
@@ -158,22 +162,26 @@ def read_in_data(dir1: "", dir2: "", end1: int = 999999999, end2: int = 99999999
 def make_hist(data):
     not_chi1 = ('GLY', 'ALA')
 
-    bins = tuple([15] * len(data))
-    range_ = tuple([tuple([-180., 180.])] * len(data))
+    bins = [24]
+    range_ = [[-180., 180.]]
+    data = np.asarray(data)
     data, _ = np.histogramdd(data.T, range=range_, bins=bins)
     data = data / np.sum(data)
     return data
 
 
 def get_distributions(data: dict) -> dict:
+
+    # hist data is organized with resnames as keys and a tuple of histograms as values
+    hist_data = {}
     # loop over residue names
-    for i in data:
-        data1 = make_hist(data[i][0])
-        data2 = make_hist(data[i][1])
+    for i in data[0].keys():
+        data1 = make_hist(data[0][i])
+        data2 = make_hist(data[1][i])
 
-        data[i] = (data1, data2)
+        hist_data[i] = (data1, data2)
 
-    return data
+    return hist_data
 
 
 def get_kbl(data: dict) -> dict:
