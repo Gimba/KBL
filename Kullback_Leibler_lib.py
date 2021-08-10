@@ -15,7 +15,7 @@
 
 import numpy as np
 import glob
-
+import pytraj as pt
 
 def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list = ['chi1'], excluded_types: list = [
     'GLY', 'ALA']) -> list:
@@ -62,8 +62,11 @@ def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list =
 
 
 def get_residue_names_from_file(dir: "", angle: list) -> list:
-    dir_res = glob.glob(dir + angle + '*.xvg')
-    resids = [a.split('/')[-1][len(angle):-4] for a in dir_res]
+    traj = pt.load('native_hex.inpcrd', 'native_hex.prmtop')
+    traj.strip(":WAT,CL-")
+    resids = []
+    for t in traj.top.residues:
+        resids.append(t.name + str(t.index))
     return resids
 
 
