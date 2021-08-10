@@ -16,6 +16,7 @@
 import numpy as np
 import glob
 import pytraj as pt
+from scipy.spatial.distance import jensenshannon
 
 def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list = ['chi1'], excluded_types: list = [
     'GLY', 'ALA']) -> list:
@@ -150,7 +151,7 @@ def read_in_data(dir1: "", dir2: "", end1: int = 999999999, end2: int = 99999999
     # for res in angle_mutual_residues[angles[0]]:
     dir1_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
 
-    dir2_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
+    dir2_angles = extract_angles(["productions/prod_2.nc"], angle_mutual_residues[angles[0]], angles)
     # TODO: adjust object types to match the ones used before pytraj
     # dir1_angles = np.array(read_1_set(dir1, end1, res, angles)).T
     # dir2_angles = np.array(read_1_set(dir2, end2, res, angles)).T
@@ -185,32 +186,32 @@ def get_distributions(data: dict) -> dict:
 
 
 def get_kbl(data: dict) -> dict:
-    kbl_dict = {}
+    jsd_dict = {}
 
     for i in data:
         a = data[i][0]
         b = data[i][1]
-
-        kbl = []
-
-        for indx, item in np.ndenumerate(a):
-            j = a[indx]
-            k = b[indx]
-            total = (j + k) / 2
-
-            if j == 0.:
-                j_term = 0.
-            else:
-                j_term = j * np.log(j / (total))
-
-            if k == 0.:
-                k_term = 0.
-            else:
-                k_term = k * np.log(k / (total))
-
-            kbl.append((j_term + k_term) / 2)
-
-        kbl = sum(kbl)
-        kbl_dict[i] = kbl
-
-    return kbl_dict
+        jsd = jensenshannon(a,b)
+        # kbl = []
+        #
+        # for indx, item in np.ndenumerate(a):
+        #     j = a[indx]
+        #     k = b[indx]
+        #     total = (j + k) / 2
+        #
+        #     if j == 0.:
+        #         j_term = 0.
+        #     else:
+        #         j_term = j * np.log(j / (total))
+        #
+        #     if k == 0.:
+        #         k_term = 0.
+        #     else:
+        #         k_term = k * np.log(k / (total))
+        #
+        #     kbl.append((j_term + k_term) / 2)
+        #
+        # kbl = sum(kbl)
+        # print(kbl)
+        jsd_dict[i] = jsd
+    return jsd_dict
