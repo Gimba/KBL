@@ -82,7 +82,7 @@ def extract_angles(files, residues, angles, topology):
     # convert data to dictionnary
     data_dict = {}
     for k in data.keys():
-        data_dict[residue_dict[int(k.split(":")[1])] + " " + k.split(":")[0]] = np.asarray(data[k].values)
+        data_dict[residue_dict[int(k.split(":")[1])] + " " + k.split(":")[0].replace("chip","chi")] = np.asarray(data[k].values)
 
     return data_dict
 
