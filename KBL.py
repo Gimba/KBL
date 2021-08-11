@@ -24,7 +24,6 @@ import matplotlib.pyplot as plt
 
 import Kullback_Leibler_lib as k
 
-
 def main(args):
     parser = argparse.ArgumentParser(description=r'Calculate the KBL value for the angle files (.xvg format) found in '
                                                  'the two specified directories.\n\n Files that get generated: \n\n{'
@@ -64,7 +63,11 @@ def main(args):
 
     residues = []
     if args.resids:
-        residues = list(map(int, args.resids.split(',')))
+        if "," in args.resids:
+            residues = list(map(int, args.resids.split(',')))
+        elif "-" in args.resids:
+            start, end = args.resids.split("-")
+            residues = [l for l in range(int(start), int(end) + 1)]
 
     y_range = []
     if args.y_range:
