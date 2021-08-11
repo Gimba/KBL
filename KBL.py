@@ -131,17 +131,17 @@ def main(args):
     distributions = k.get_distributions(data)
 
     print('calculating KBL-values')
-    kbl = k.get_kbl(distributions)
+    jsd = k.get_jsd(distributions)
 
     # generate histogram
     all_kbl = []
     all_kbl_names = []
-    for i in kbl:
-        plt.scatter(float(i[3:]), kbl[i], c="g")
+    for name, distance in jsd.items():
+        plt.scatter(name, distance, c="g")
         if len(y_range) > 1:
             plt.ylim(y_range)
-        all_kbl.append(kbl[i])
-        all_kbl_names.append(i)
+        all_kbl.append(distance)
+        all_kbl_names.append(name)
     plt.xlabel('residue')
     plt.ylabel('kbl value')
 
@@ -151,7 +151,7 @@ def main(args):
         plt.show()
 
     # sort KBL values for saving in hist data file
-    kbl_sorted = sorted(kbl.items(), key=operator.itemgetter(1), reverse=True)
+    kbl_sorted = sorted(jsd.items(), key=operator.itemgetter(1), reverse=True)
 
     # write histogram data to file
     with open(hist_dat_filename, 'w') as o:
@@ -166,11 +166,11 @@ def main(args):
     # generate and write .pymol file
     with open(kbl_filename, 'w') as f:
         f.write('hide lines\nshow cartoon\n')
-        for j in kbl:
+        for j in jsd:
             if maximum == 0:
                 print("comparing the same distributions, exiting...")
                 exit()
-            val = 1. - (kbl[j] / maximum)
+            val = 1. - (jsd[j] / maximum)
             res = ''.join([i for i in j if i.isdigit()])
             f.write('set_color %sred = [%f, %f, 1]\n' % (j, val, val))
             f.write('color %sred, resid %s\n' % (j, res))
