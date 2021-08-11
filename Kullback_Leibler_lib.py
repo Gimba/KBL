@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Martin Rosellen, Lucas Siemons
+# Copyright (c) 2019 Martin Rosellen
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -14,9 +14,9 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import numpy as np
-import glob
 import pytraj as pt
 from scipy.spatial.distance import jensenshannon
+
 
 def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list = ['chi1'], excluded_types: list = [
     'GLY', 'ALA']) -> list:
@@ -60,6 +60,7 @@ def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list =
 
     return all_angles
 
+
 def extract_angles(files, residues, angles, topology):
     """
 
@@ -79,12 +80,14 @@ def extract_angles(files, residues, angles, topology):
 
     traj = pt.TrajectoryIterator(files, topology)
     data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=resids)
-    # convert data to dictionnary
+    # convert data to dictionary
     data_dict = {}
     for k in data.keys():
-        data_dict[residue_dict[int(k.split(":")[1])] + " " + k.split(":")[0].replace("chip","chi")] = np.asarray(data[k].values)
+        data_dict[residue_dict[int(k.split(":")[1])] + " " + k.split(":")[0].replace("chip", "chi")] = np.asarray(
+            data[k].values)
 
     return data_dict
+
 
 def get_residue_names_from_file(dir: "", angle: list) -> list:
     traj = pt.load('native_hex.inpcrd', 'native_hex.prmtop')
@@ -176,7 +179,6 @@ def make_hist(data):
 
 
 def get_distributions(data: dict) -> dict:
-
     # hist data is organized with resnames as keys and a tuple of histograms as values
     hist_data = {}
     # loop over residue names
@@ -195,7 +197,7 @@ def get_jsd(data: dict) -> dict:
     for i in data:
         a = data[i][0]
         b = data[i][1]
-        jsd = jensenshannon(a,b)
+        jsd = jensenshannon(a, b)
         # kbl = []
         #
         # for indx, item in np.ndenumerate(a):

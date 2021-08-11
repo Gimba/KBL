@@ -34,8 +34,8 @@ def main(args):
                                                  'hist.{output_filename}.png - image of the generated histogram\n'
                                                  'hist.{outp_filemane}.dat - data of the histogram',
                                      formatter_class=RawTextHelpFormatter)
-    parser.add_argument('dir1', help='reference directory, e.g. ./WT/gromacs_psi_phi_chi/')
-    parser.add_argument('dir2', help='to compare to directory, e.g. ./R2215A/gromacs_psi_phi_chi/')
+    parser.add_argument('files1', help='reference directory, e.g. ./WT/gromacs_psi_phi_chi/')
+    parser.add_argument('files2', help='to compare to directory, e.g. ./R2215A/gromacs_psi_phi_chi/')
     parser.add_argument('-m', dest='mutations', nargs='?', help='mutations introduced to the structure of the second ' \
                                                                 'directory. e.g. ARG2215,ALA2215', default="")
     parser.add_argument('-o', dest='output_filename', nargs='?', help='name of .pymol file that gets written ('
@@ -59,8 +59,8 @@ def main(args):
     args = parser.parse_args()
 
     # set up input parameters
-    dir1 = args.dir1.strip('\'')
-    dir2 = args.dir2.strip('\'')
+    files1 = args.files1.strip('\'')
+    files2 = args.files2.strip('\'')
 
     residues = []
     if args.resids:
@@ -75,8 +75,8 @@ def main(args):
         kbl_filename = args.output_filename
 
     else:
-        dir1_name = dir1.split('/')
-        dir2_name = dir2.split('/')
+        dir1_name = files1.split('/')
+        dir2_name = files2.split('/')
 
         # if the directories do not differ in their last path-dir us the second last dir for naming
         # e.g.: somedir/naming_dir1/subdir; somedir/naming_dir2/subdir
@@ -118,8 +118,8 @@ def main(args):
 
     print("pymol output-file:", kbl_filename)
 
-    print('reading data: ', dir1, dir2)
-    data = k.read_in_data(dir1, dir2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
+    print('reading data: ', files1, files2)
+    data = k.read_in_data(files1, files2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
                           residues=residues, topologies=[args.topology1, args.topology2])
 
     print('calculating distributions')
