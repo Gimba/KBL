@@ -49,7 +49,7 @@ def main(args):
     #                                                             'dir2, e.g. 20000')
     parser.add_argument('-s', dest='show', action='store_true', help='show histogram', default=False)
     parser.add_argument('-r', dest='resids', nargs='?', help='specify a set of residues that are used in the '
-                                                             'calculation', default=False)
+                                                             'calculation, default: all residues', default=False)
     parser.add_argument('-y_range', nargs='?', help='lower and upper bound for y-axis, used to make different kbl '
                                                     'calculations comperable')
     parser.add_argument('-suff', dest='suffix', nargs='?', help='add suffix to file names', default=False)

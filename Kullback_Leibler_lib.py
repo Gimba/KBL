@@ -136,9 +136,10 @@ def read_in_data(files1: "", files2: "", mutations: list = [], angles: list = []
     data = {}
 
     def add_mutation_res():
-        angles_1 = np.array(read_1_set(files1, end1, mutations[0], angles)).T
-        angles_2 = np.array(read_1_set(files2, end2, mutations[1], angles)).T
-
+        # angles_1 = np.array(read_1_set(files1, end1, mutations[0], angles)).T
+        # angles_2 = np.array(read_1_set(files2, end2, mutations[1], angles)).T
+        angles_1 = np.array(read_1_set(files1, mutations[0], angles)).T
+        angles_2 = np.array(read_1_set(files2, mutations[1], angles)).T
         # handle case where the mutation has not got the chi1 angle
         if len(angles_1) > len(angles_2):
             angles_1 = np.delete(angles_1, -1, 0)
