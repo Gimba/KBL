@@ -60,12 +60,13 @@ def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list =
 
     return all_angles
 
-def extract_angles(files, residues, angles):
+def extract_angles(files, residues, angles, topology):
     """
 
     :param files: trajectories
     :param residues: range of residues given in cpptraj convention
     :param angles: psi,phi,chi by default
+    :param topology
     :return: data_dict: contains angles with residue identifier as keys and values as list
     """
     # "-1" needed for conversion between python convention (starts with 0) and cpptraj convention (starts with 1)
@@ -76,7 +77,7 @@ def extract_angles(files, residues, angles):
     for r in residues:
         residue_dict[int(r[3:])] = r
 
-    traj = pt.TrajectoryIterator(files, "native_hex.prmtop")
+    traj = pt.TrajectoryIterator(files, topology)
     data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=resids)
     # convert data to dictionnary
     data_dict = {}
@@ -125,24 +126,24 @@ def get_resids_from_files(dir1: "", dir2: "", angles: list, residues: list = [])
     return angle_resid_intersects
 
 
-def read_in_data(dir1: "", dir2: "", end1: int = 999999999, end2: int = 999999999, mutations: list = [],
-                 angles: list = [], residues: list = []) -> dict:
-    angle_mutual_residues = get_resids_from_files(dir1, dir2, angles, residues)
+def read_in_data(files1: "", files2: "", end1: int = 999999999, end2: int = 999999999, mutations: list = [],
+                 angles: list = [], residues: list = [], topologies: list = []) -> dict:
+    angle_mutual_residues = get_resids_from_files(files1, files1, angles, residues)
 
     data = {}
 
     def add_mutation_res():
-        dir1_angles = np.array(read_1_set(dir1, end1, mutations[0], angles)).T
-        dir2_angles = np.array(read_1_set(dir2, end2, mutations[1], angles)).T
+        angles_1 = np.array(read_1_set(files1, end1, mutations[0], angles)).T
+        angles_2 = np.array(read_1_set(files2, end2, mutations[1], angles)).T
 
         # handle case where the mutation has not got the chi1 angle
-        if len(dir1_angles) > len(dir2_angles):
-            dir1_angles = np.delete(dir1_angles, -1, 0)
+        if len(angles_1) > len(angles_2):
+            angles_1 = np.delete(angles_1, -1, 0)
         # handle case where the non-mutation has not got the chi1 angle
-        elif len(dir1_angles) < len(dir2_angles):
-            dir2_angles = np.delete(dir2_angles, -1, 0)
+        elif len(angles_1) < len(angles_2):
+            angles_2 = np.delete(angles_2, -1, 0)
         # naming according to reference residue ids (dir1 pdb)
-        data[mutations[0]] = (dir1_angles, dir2_angles)
+        data[mutations[0]] = (angles_1, angles_2)
 
     # # add specified mutation residue which has different file names
     if len(mutations) > 1:
@@ -155,9 +156,9 @@ def read_in_data(dir1: "", dir2: "", end1: int = 999999999, end2: int = 99999999
             add_mutation_res()
 
     # for res in angle_mutual_residues[angles[0]]:
-    dir1_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
+    dir1_angles = extract_angles(files1, angle_mutual_residues[angles[0]], angles, topologies[0])
 
-    dir2_angles = extract_angles(["productions/prod_2.nc"], angle_mutual_residues[angles[0]], angles)
+    dir2_angles = extract_angles(files2, angle_mutual_residues[angles[0]], angles, topologies[1])
     data = (dir1_angles, dir2_angles)
 
     return data

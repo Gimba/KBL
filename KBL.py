@@ -54,18 +54,13 @@ def main(args):
     parser.add_argument('-y_range', nargs='?', help='lower and upper bound for y-axis, used to make different kbl '
                                                     'calculations comperable')
     parser.add_argument('-suff', dest='suffix', nargs='?', help='add suffix to file names', default=False)
-
+    parser.add_argument('-t1', dest='topology1', nargs='?', help='topology for files_1')
+    parser.add_argument('-t2', dest='topology2', nargs='?', help='topology for files_1')
     args = parser.parse_args()
 
     # set up input parameters
     dir1 = args.dir1.strip('\'')
     dir2 = args.dir2.strip('\'')
-
-    # add / as last character of directories if missing
-    if dir1[-1] != '/':
-        dir1 += '/'
-    if dir2[-1] != '/':
-        dir2 += '/'
 
     residues = []
     if args.resids:
@@ -125,7 +120,7 @@ def main(args):
 
     print('reading data: ', dir1, dir2)
     data = k.read_in_data(dir1, dir2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
-                          residues=residues)
+                          residues=residues, topologies=[args.topology1, args.topology2])
 
     print('calculating distributions')
     distributions = k.get_distributions(data)
