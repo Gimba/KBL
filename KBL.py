@@ -16,6 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import argparse
+import math
 import operator
 import sys
 from argparse import RawTextHelpFormatter
@@ -27,7 +28,7 @@ import Kullback_Leibler_lib as k
 def main(args):
     parser = argparse.ArgumentParser(description=r'Calculate the KBL value for the angle files (.xvg format) found in '
                                                  'the two specified directories.\n\n Files that get generated: \n\n{'
-                                                 'output_filename} - .pymol that can be loaded in pymol (@{'
+                                                 'output_filename} - .pml that can be loaded in pml (@{'
                                                  'output_filename} and colors residues with low kbl-value white and '
                                                  'high kbl-values blue\n'
                                                  'hist.{output_filename}.png - image of the generated histogram\n'
@@ -37,9 +38,9 @@ def main(args):
     parser.add_argument('files2', help='to compare to directory, e.g. ./R2215A/gromacs_psi_phi_chi/')
     parser.add_argument('-m', dest='mutations', nargs='?', help='mutations introduced to the structure of the second ' \
                                                                 'directory. e.g. ARG2215,ALA2215', default="")
-    parser.add_argument('-o', dest='output_filename', nargs='?', help='name of .pymol file that gets written ('
+    parser.add_argument('-o', dest='output_filename', nargs='?', help='name of .pml file that gets written ('
                                                                       'default: kbl_{dir1}_{e1}_{dir2}_{e2}_{'
-                                                                      'angles}.pymol')
+                                                                      'angles}.pml')
     parser.add_argument('-a', dest='angles', nargs='?', help='specify angles that should be used to calculate kbl, '
                                                              'e.g. psi,phi,chi1',
                         default="")
@@ -85,18 +86,18 @@ def main(args):
         # e.g.: somedir/naming_dir1/subdir; somedir/naming_dir2/subdir
         if dir1_name[-2] == dir2_name[-2]:
             kbl_filename = \
-                'kbl_' + dir1_name[-3] + '_' + dir2_name[-3] + '_' + args.angles.replace(',', '_') + '.pymol'
+                'kbl_' + dir1_name[-3] + '_' + dir2_name[-3] + '_' + args.angles.replace(',', '_') + '.pml'
         else:
             kbl_filename = \
-                'kbl_' + dir1_name[-2] + '_' + dir2_name[-2] + '_' + args.angles.replace(',', '_') + '.pymol'
+                'kbl_' + dir1_name[-2] + '_' + dir2_name[-2] + '_' + args.angles.replace(',', '_') + '.pml'
 
     if args.suffix:
         kbl_filename = kbl_filename.split('.')
         kbl_filename = kbl_filename[0] + "_" + args.suffix + "." + kbl_filename[1]
 
     # filenames for histogram and its data (data sorted descending by kbl value)
-    hist_dat_filename = 'hist.' + kbl_filename.replace('.pymol', '.dat')
-    hist_png_filename = 'hist.' + kbl_filename.replace(".pymol", '.png')
+    hist_dat_filename = 'hist.' + kbl_filename.replace('.pml', '.dat')
+    hist_png_filename = 'hist.' + kbl_filename.replace(".pml", '.png')
 
     mutations = args.mutations.split(',')
 
@@ -160,19 +161,47 @@ def main(args):
     # output max and second maximal value to console
     print('maximum: ', kbl_sorted[0][0], kbl_sorted[0][1])
     print('second : ', kbl_sorted[1][0], kbl_sorted[1][1])
-    maximum = kbl_sorted[0][1]
+    # maximum = kbl_sorted[0][1]
 
-    # generate and write .pymol file
+
+    color_jsd_dict = {}
+
+    for key1 in list(jsd.keys()):
+        for key2 in list(jsd.keys()):
+            if key1.split(" ")[0] in key2:
+                if not key1.split(" ")[0] in color_jsd_dict.keys():
+                    color_jsd_dict[key1.split(" ")[0]] = {}
+                temp_dict =  {key2.split(" ")[1] : jsd[key2]}
+                color_jsd_dict[key1.split(" ")[0]].update(temp_dict)
+                del jsd[key2]
+    print(color_jsd_dict)
+    # generate and write .pml file
     with open(kbl_filename, 'w') as f:
         f.write('hide lines\nshow cartoon\n')
-        for j in jsd:
-            if maximum == 0:
-                print("comparing the same distributions, exiting...")
-                exit()
-            val = 1. - (jsd[j] / maximum)
-            res = ''.join([i for i in j if i.isdigit()])
-            f.write('set_color %sred = [%f, %f, 1]\n' % (j, val, val))
-            f.write('color %sred, resid %s\n' % (j, res))
+        for resid, angles in color_jsd_dict.items():
+            if "phi" in angles.keys():
+                phi_val = angles["phi"]
+            else:
+                phi_val = 0
+            if "psi" in angles.keys():
+                psi_val = angles["psi"]
+            else:
+                psi_val = 0
+            # backbone = 1 - math.exp(-(psi_val + phi_val) / 2)
+            backbone = -(math.log((psi_val + phi_val) / 2) / math.exp(1))
+            if backbone > 1:
+                backbone = 1
+            # elif backbone < 0.5:
+            #     backbone = 0
+            if "chi" in angles.keys():
+                chi_val = math.sqrt(angles["chi"])
+            else:
+                chi_val = 0
+
+            # val = 1. - (jsd[j] / maximum)
+            res = ''.join([i for i in resid if i.isdigit()])
+            f.write('set_color %sred = [%f, %f, %f]\n' % (resid, 1- backbone, backbone , 0))
+            f.write('color %sred, resid %s\n' % (resid, res))
 
 
 if __name__ == '__main__':
