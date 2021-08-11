@@ -69,14 +69,20 @@ def extract_angles(files, residues, angles):
     :return:
     """
     # "-1" needed for conversion between python convention (starts with 0) and cpptraj convention (starts with 1)
-    residues = [int(r[3:]) - 1 for r in residues]
+    resids = [int(r[3:]) - 1 for r in residues]
+
+    # construct this to map resids back to full res name
+    residue_dict = {}
+    for r in residues:
+        residue_dict[int(r[3:])] = r
+
     traj = pt.TrajectoryIterator(files, "native_hex.prmtop")
-    data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=residues)
+    data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=resids)
     # convert data to dictionnary
     data_dict = {}
     for k in data.keys():
-        # TODO: map keys back to residue names
-        data_dict[k] = list(data[k].values)
+
+        data_dict[k.split(":")[0] + residue_dict[int(k.split(":")[1])]] = np.asarray(data[k].values)
     return(data_dict)
 
 def get_residue_names_from_file(dir: "", angle: list) -> list:
@@ -185,7 +191,7 @@ def get_distributions(data: dict) -> dict:
     return hist_data
 
 
-def get_kbl(data: dict) -> dict:
+def get_jsd(data: dict) -> dict:
     jsd_dict = {}
 
     for i in data:
