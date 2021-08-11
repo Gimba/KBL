@@ -65,8 +65,8 @@ def extract_angles(files, residues, angles):
 
     :param files: trajectories
     :param residues: range of residues given in cpptraj convention
-    :param angles:
-    :return:
+    :param angles: psi,phi,chi by default
+    :return: data_dict: contains angles with residue identifier as keys and values as list
     """
     # "-1" needed for conversion between python convention (starts with 0) and cpptraj convention (starts with 1)
     resids = [int(r[3:]) - 1 for r in residues]
@@ -81,9 +81,9 @@ def extract_angles(files, residues, angles):
     # convert data to dictionnary
     data_dict = {}
     for k in data.keys():
+        data_dict[residue_dict[int(k.split(":")[1])] + " " + k.split(":")[0]] = np.asarray(data[k].values)
 
-        data_dict[k.split(":")[0] + residue_dict[int(k.split(":")[1])]] = np.asarray(data[k].values)
-    return(data_dict)
+    return data_dict
 
 def get_residue_names_from_file(dir: "", angle: list) -> list:
     traj = pt.load('native_hex.inpcrd', 'native_hex.prmtop')
@@ -158,9 +158,6 @@ def read_in_data(dir1: "", dir2: "", end1: int = 999999999, end2: int = 99999999
     dir1_angles = extract_angles(["productions/prod_1.nc"], angle_mutual_residues[angles[0]], angles)
 
     dir2_angles = extract_angles(["productions/prod_2.nc"], angle_mutual_residues[angles[0]], angles)
-    # TODO: adjust object types to match the ones used before pytraj
-    # dir1_angles = np.array(read_1_set(dir1, end1, res, angles)).T
-    # dir2_angles = np.array(read_1_set(dir2, end2, res, angles)).T
     data = (dir1_angles, dir2_angles)
 
     return data
