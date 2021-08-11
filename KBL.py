@@ -44,18 +44,18 @@ def main(args):
     parser.add_argument('-a', dest='angles', nargs='?', help='specify angles that should be used to calculate kbl, '
                                                              'e.g. psi,phi,chi1',
                         default="")
-    parser.add_argument('-e1', dest='end_dir1', nargs='?', help='lines/number of frames to read from files in '
-                                                                'dir1, e.g. 4000')
-    parser.add_argument('-e2', dest='end_dir2', nargs='?', help='lines/number of frames to read from files in '
-                                                                'dir2, e.g. 20000')
+    # parser.add_argument('-e1', dest='end_dir1', nargs='?', help='lines/number of frames to read from files in '
+    #                                                             'dir1, e.g. 4000')
+    # parser.add_argument('-e2', dest='end_dir2', nargs='?', help='lines/number of frames to read from files in '
+    #                                                             'dir2, e.g. 20000')
     parser.add_argument('-s', dest='show', action='store_true', help='show histogram', default=False)
     parser.add_argument('-r', dest='resids', nargs='?', help='specify a set of residues that are used in the '
                                                              'calculation', default=False)
     parser.add_argument('-y_range', nargs='?', help='lower and upper bound for y-axis, used to make different kbl '
                                                     'calculations comperable')
     parser.add_argument('-suff', dest='suffix', nargs='?', help='add suffix to file names', default=False)
-    parser.add_argument('-t1', dest='topology1', nargs='?', help='topology for files_1')
-    parser.add_argument('-t2', dest='topology2', nargs='?', help='topology for files_1')
+    parser.add_argument('-t1', dest='topology1', nargs='?', help='topology for files1')
+    parser.add_argument('-t2', dest='topology2', nargs='?', help='topology for files2')
     args = parser.parse_args()
 
     # set up input parameters
@@ -99,29 +99,30 @@ def main(args):
 
     angles = args.angles.split(',')
 
-    end_dir1 = 999999999
-    if args.end_dir1:
-        end_dir1 = args.end_dir1
-        kbl_filename = kbl_filename.split('_')
-        kbl_filename = kbl_filename[0] + "_" + kbl_filename[1] + "(1-" + end_dir1 + ")_" + "_".join(kbl_filename[
-                                                                                                    2:])
-        end_dir1 = int(end_dir1)
-
-    end_dir2 = 999999999
-    if args.end_dir2:
-        end_dir2 = args.end_dir2
-        kbl_filename = kbl_filename.split('_')
-        kbl_filename = kbl_filename[0] + "_" + kbl_filename[1] + "_" + kbl_filename[2] + "(1-" + end_dir2 + ")_" + \
-                       "_".join(
-                           kbl_filename[3:])
-        end_dir2 = int(end_dir2)
+    # end_dir1 = 999999999
+    # if args.end_dir1:
+    #     end_dir1 = args.end_dir1
+    #     kbl_filename = kbl_filename.split('_')
+    #     kbl_filename = kbl_filename[0] + "_" + kbl_filename[1] + "(1-" + end_dir1 + ")_" + "_".join(kbl_filename[
+    #                                                                                                 2:])
+    #     end_dir1 = int(end_dir1)
+    #
+    # end_dir2 = 999999999
+    # if args.end_dir2:
+    #     end_dir2 = args.end_dir2
+    #     kbl_filename = kbl_filename.split('_')
+    #     kbl_filename = kbl_filename[0] + "_" + kbl_filename[1] + "_" + kbl_filename[2] + "(1-" + end_dir2 + ")_" + \
+    #                    "_".join(
+    #                        kbl_filename[3:])
+    #     end_dir2 = int(end_dir2)
 
     print("pymol output-file:", kbl_filename)
 
     print('reading data: ', files1, files2)
-    data = k.read_in_data(files1, files2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
-                          residues=residues, topologies=[args.topology1, args.topology2])
-
+    # data = k.read_in_data(files1, files2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
+    #                       residues=residues, topologies=[args.topology1, args.topology2])
+    data = k.read_in_data(files1, files2, mutations=mutations, angles=angles, residues=residues,
+                          topologies=[args.topology1, args.topology2])
     print('calculating distributions')
     distributions = k.get_distributions(data)
 

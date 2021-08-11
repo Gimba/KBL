@@ -129,8 +129,8 @@ def get_resids_from_files(dir1: "", dir2: "", angles: list, residues: list = [])
     return angle_resid_intersects
 
 
-def read_in_data(files1: "", files2: "", end1: int = 999999999, end2: int = 999999999, mutations: list = [],
-                 angles: list = [], residues: list = [], topologies: list = []) -> dict:
+def read_in_data(files1: "", files2: "", mutations: list = [], angles: list = [], residues: list = [],
+                 topologies: list = []) -> dict:
     angle_mutual_residues = get_resids_from_files(files1, files1, angles, residues)
 
     data = {}
