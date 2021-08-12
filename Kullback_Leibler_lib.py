@@ -90,6 +90,7 @@ def extract_angles(files, residues, angles, topology):
 
 
 def get_residue_names_from_file(top):
+    print(top)
     structure = pt.load_topology(top)
     structure.strip(":WAT,CL-")
     resids = []
@@ -98,7 +99,7 @@ def get_residue_names_from_file(top):
     return resids
 
 
-def get_resids_from_files(top1, traj1, top2, traj2, angles, residues):
+def get_resids_from_files(top1, top2, angles, residues):
     """
     Returns a list of residue ids extracted from file names present in both directories. Also a log file with 
     residue ids missing in one or the other directory gets written to resids.log 
@@ -131,7 +132,7 @@ def get_resids_from_files(top1, traj1, top2, traj2, angles, residues):
 
 def read_in_data(files1, files2, mutations, angles, residues,
                  topologies):
-    angle_mutual_residues = get_resids_from_files(files1[0], topologies[0],files2[0],  topologies[1],   angles, residues)
+    angle_mutual_residues = get_resids_from_files(topologies[0], topologies[1],   angles, residues)
 
     data = {}
 
