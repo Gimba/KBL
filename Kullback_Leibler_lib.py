@@ -90,7 +90,6 @@ def extract_angles(files, residues, angles, topology):
 
 
 def get_residue_names_from_file(top):
-    print(top)
     structure = pt.load_topology(top)
     structure.strip(":WAT,CL-")
     resids = []
@@ -194,6 +193,7 @@ def get_distributions(data):
 
 
 def get_jsd(data):
+    print("Calculating Jensen-Shannon divergence")
     jsd_dict = {}
 
     for i in data:

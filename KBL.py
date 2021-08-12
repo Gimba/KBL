@@ -141,20 +141,21 @@ def main(args):
     jsd = k.get_jsd(distributions)
 
     # generate histogram
-    all_kbl = []
-    all_kbl_names = []
-    for name, distance in jsd.items():
-        plt.scatter(name, distance, c="g")
-        if len(y_range) > 1:
-            plt.ylim(y_range)
-        all_kbl.append(distance)
-        all_kbl_names.append(name)
-    plt.xlabel('residue')
-    plt.ylabel('kbl value')
 
-    plt.savefig(hist_png_filename)
 
     if args.show:
+        all_jsd = []
+        all_jsd_names = []
+        for name, distance in jsd.items():
+            plt.scatter(name, distance, c="g")
+            if len(y_range) > 1:
+                plt.ylim(y_range)
+            all_jsd.append(distance)
+            all_jsd_names.append(name)
+        plt.xlabel('residue')
+        plt.ylabel('kbl value')
+
+        plt.savefig(hist_png_filename)
         plt.show()
 
     # sort KBL values for saving in hist data file
