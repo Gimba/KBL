@@ -21,6 +21,9 @@ import operator
 import sys
 from argparse import RawTextHelpFormatter
 
+import matplotlib
+matplotlib.use('agg')
+
 import matplotlib.pyplot as plt
 
 import Kullback_Leibler_lib as k
