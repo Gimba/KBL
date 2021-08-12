@@ -22,13 +22,17 @@ import sys
 from argparse import RawTextHelpFormatter
 
 import matplotlib
+
 matplotlib.use('agg')
 
 import matplotlib.pyplot as plt
 
 import Kullback_Leibler_lib as k
+import time
+
 
 def main(args):
+    tic = time.time()
     parser = argparse.ArgumentParser(description=r'Calculate the KBL value for the angle files (.xvg format) found in '
                                                  'the two specified directories.\n\n Files that get generated: \n\n{'
                                                  'output_filename} - .pml that can be loaded in pml (@{'
@@ -166,7 +170,6 @@ def main(args):
     print('second : ', kbl_sorted[1][0], kbl_sorted[1][1])
     # maximum = kbl_sorted[0][1]
 
-
     color_jsd_dict = {}
 
     for key1 in list(jsd.keys()):
@@ -174,7 +177,7 @@ def main(args):
             if key1.split(" ")[0] in key2:
                 if not key1.split(" ")[0] in color_jsd_dict.keys():
                     color_jsd_dict[key1.split(" ")[0]] = {}
-                temp_dict =  {key2.split(" ")[1] : jsd[key2]}
+                temp_dict = {key2.split(" ")[1]: jsd[key2]}
                 color_jsd_dict[key1.split(" ")[0]].update(temp_dict)
                 del jsd[key2]
     print(color_jsd_dict)
@@ -203,8 +206,10 @@ def main(args):
 
             # val = 1. - (jsd[j] / maximum)
             res = ''.join([i for i in resid if i.isdigit()])
-            f.write('set_color %sred = [%f, %f, %f]\n' % (resid, 1- backbone, backbone , 0))
+            f.write('set_color %sred = [%f, %f, %f]\n' % (resid, 1 - backbone, backbone, 0))
             f.write('color %sred, resid %s\n' % (resid, res))
+    toc = time.time()
+    print("------ ", round(toc - tic, 4), "seconds ------")
 
 
 if __name__ == '__main__':
