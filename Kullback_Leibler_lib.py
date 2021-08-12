@@ -98,7 +98,7 @@ def get_residue_names_from_file(top, traj):
     return resids
 
 
-def get_resids_from_files(top1, traj1, top2, traj2, angles: list, residues: list = []):
+def get_resids_from_files(top1, traj1, top2, traj2, angles, residues: list = []):
     """
     Returns a list of residue ids extracted from file names present in both directories. Also a log file with 
     residue ids missing in one or the other directory gets written to resids.log 
