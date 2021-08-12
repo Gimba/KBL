@@ -89,7 +89,7 @@ def extract_angles(files, residues, angles, topology):
     return data_dict
 
 
-def get_residue_names_from_file(top, traj) -> list:
+def get_residue_names_from_file(top, traj):
     structure = pt.load_topology(top)
     structure.strip(":WAT,CL-")
     resids = []
@@ -98,7 +98,7 @@ def get_residue_names_from_file(top, traj) -> list:
     return resids
 
 
-def get_resids_from_files(top1, traj1, top2, traj2, angles: list, residues: list = []) -> list:
+def get_resids_from_files(top1, traj1, top2, traj2, angles: list, residues: list = []):
     """
     Returns a list of residue ids extracted from file names present in both directories. Also a log file with 
     residue ids missing in one or the other directory gets written to resids.log 
@@ -130,7 +130,7 @@ def get_resids_from_files(top1, traj1, top2, traj2, angles: list, residues: list
 
 
 def read_in_data(files1: "", files2: "", mutations: list = [], angles: list = [], residues: list = [],
-                 topologies: list = []) -> dict:
+                 topologies: list = []):
     angle_mutual_residues = get_resids_from_files(files1[0], topologies[0],files2[0],  topologies[1],   angles, residues)
 
     data = {}
@@ -179,7 +179,7 @@ def make_hist(data):
     return data
 
 
-def get_distributions(data: dict) -> dict:
+def get_distributions(data: dict):
     # hist data is organized with resnames as keys and a tuple of histograms as values
     hist_data = {}
     # loop over residue names
@@ -192,7 +192,7 @@ def get_distributions(data: dict) -> dict:
     return hist_data
 
 
-def get_jsd(data: dict) -> dict:
+def get_jsd(data: dict):
     jsd_dict = {}
 
     for i in data:
