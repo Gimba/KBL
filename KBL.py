@@ -59,8 +59,8 @@ def main(args):
     args = parser.parse_args()
 
     # set up input parameters
-    files1 = args.files1.strip('\'')
-    files2 = args.files2.strip('\'')
+    files1 = args.files1.strip('\'').split(" ")
+    files2 = args.files2.strip('\'').split(" ")
 
     residues = []
     if args.resids:

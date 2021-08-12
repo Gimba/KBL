@@ -89,16 +89,16 @@ def extract_angles(files, residues, angles, topology):
     return data_dict
 
 
-def get_residue_names_from_file(dir: "", angle: list) -> list:
-    traj = pt.load('native_hex.inpcrd', 'native_hex.prmtop')
-    traj.strip(":WAT,CL-")
+def get_residue_names_from_file(top, traj) -> list:
+    structure = pt.load_topology(top)
+    structure.strip(":WAT,CL-")
     resids = []
-    for t in traj.top.residues:
+    for t in structure.residues:
         resids.append(t.name + str(t.original_resid))
     return resids
 
 
-def get_resids_from_files(dir1: "", dir2: "", angles: list, residues: list = []) -> list:
+def get_resids_from_files(top1, traj1, top2, traj2, angles: list, residues: list = []) -> list:
     """
     Returns a list of residue ids extracted from file names present in both directories. Also a log file with 
     residue ids missing in one or the other directory gets written to resids.log 
@@ -115,8 +115,8 @@ def get_resids_from_files(dir1: "", dir2: "", angles: list, residues: list = [])
     angle_resid_intersects = {}
 
     for angle in angles:
-        resids_dir1[angle] = get_residue_names_from_file(dir1, angle)
-        resids_dir2[angle] = get_residue_names_from_file(dir2, angle)
+        resids_dir1[angle] = get_residue_names_from_file(traj1, top1)
+        resids_dir2[angle] = get_residue_names_from_file(traj2, top2)
         angle_resid_intersects[angle] = set(resids_dir1[angle]) & set(resids_dir2[angle])
 
         if residues:
@@ -131,7 +131,7 @@ def get_resids_from_files(dir1: "", dir2: "", angles: list, residues: list = [])
 
 def read_in_data(files1: "", files2: "", mutations: list = [], angles: list = [], residues: list = [],
                  topologies: list = []) -> dict:
-    angle_mutual_residues = get_resids_from_files(files1, files1, angles, residues)
+    angle_mutual_residues = get_resids_from_files(files1[0], topologies[0],files2[0],  topologies[1],   angles, residues)
 
     data = {}
 
