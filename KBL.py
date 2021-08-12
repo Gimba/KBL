@@ -41,6 +41,7 @@ def main(args):
                                                  'hist.{output_filename}.png - image of the generated histogram\n'
                                                  'hist.{outp_filemane}.dat - data of the histogram',
                                      formatter_class=RawTextHelpFormatter)
+    # TODO: give option to read in whole directories and specify how many frames should be considered
     parser.add_argument('files1', help='reference directory, e.g. ./WT/gromacs_psi_phi_chi/')
     parser.add_argument('files2', help='to compare to directory, e.g. ./R2215A/gromacs_psi_phi_chi/')
     parser.add_argument('-m', dest='mutations', nargs='?', help='mutations introduced to the structure of the second ' \
@@ -144,6 +145,7 @@ def main(args):
 
 
     if args.show:
+        # TODO: give option to plot only a range of residues (the 10 highest JSD values)
         all_jsd = []
         all_jsd_names = []
         for name, distance in jsd.items():
