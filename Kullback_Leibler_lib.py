@@ -18,47 +18,47 @@ import pytraj as pt
 from scipy.spatial.distance import jensenshannon
 
 
-def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list = ['chi1'], excluded_types: list = [
-    'GLY', 'ALA']) -> list:
-    """
-    
-    :param path: base path of files
-    :param end: read until this line
-    :param res: residue to read in e.g. PRO123
-    :param angles: angles to include e.g. ['phi','psi','chi1]
-    :param excluded_angles: angles that need special attention e.g. chi1 not present for ALA and GLY
-    :param excluded_types: do not read in data for angles that have this type
-    :return: list with angle values
-    """
-
-    res_type = ''.join([i for i in res if not i.isdigit()])
-
-    # generate list with file names
-    trajectories = ['productions/prod_1.nc']
-
-    # for angle in angles:
-    #     ## leave out files for specified angles and residues
-    #     if not (angle in excluded_angles and res_type in excluded_types):
-    #         files.append(path + angle + res + '.xvg')
-    #     else:
-    #         print('omitting file', path + angle + res + '.xvg')
-    # # read in data from files
-    file_tuple = []
-    #     f = open(file)
-    #     file_tuple.append(f.readlines())
-    #     f.close()
-    # file_tuple = tuple(file_tuple)
-
-    # extract angle values from file contents
-    all_angles = []
-    for i in zip(*file_tuple):
-        if i[0][0] not in ('#', '@'):
-            if float(i[0].split()[0]) < end:
-                angles = [a.split()[1] for a in i]
-                angles = [float(a) for a in angles]
-                all_angles.append(angles)
-
-    return all_angles
+# def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list = ['chi1'], excluded_types: list = [
+#     'GLY', 'ALA']) -> list:
+#     """
+#
+#     :param path: base path of files
+#     :param end: read until this line
+#     :param res: residue to read in e.g. PRO123
+#     :param angles: angles to include e.g. ['phi','psi','chi1]
+#     :param excluded_angles: angles that need special attention e.g. chi1 not present for ALA and GLY
+#     :param excluded_types: do not read in data for angles that have this type
+#     :return: list with angle values
+#     """
+#
+#     res_type = ''.join([i for i in res if not i.isdigit()])
+#
+#     # generate list with file names
+#     trajectories = ['productions/prod_1.nc']
+#
+#     # for angle in angles:
+#     #     ## leave out files for specified angles and residues
+#     #     if not (angle in excluded_angles and res_type in excluded_types):
+#     #         files.append(path + angle + res + '.xvg')
+#     #     else:
+#     #         print('omitting file', path + angle + res + '.xvg')
+#     # # read in data from files
+#     file_tuple = []
+#     #     f = open(file)
+#     #     file_tuple.append(f.readlines())
+#     #     f.close()
+#     # file_tuple = tuple(file_tuple)
+#
+#     # extract angle values from file contents
+#     all_angles = []
+#     for i in zip(*file_tuple):
+#         if i[0][0] not in ('#', '@'):
+#             if float(i[0].split()[0]) < end:
+#                 angles = [a.split()[1] for a in i]
+#                 angles = [float(a) for a in angles]
+#                 all_angles.append(angles)
+#
+#     return all_angles
 
 
 def extract_angles(files, residues, angles, topology):
@@ -135,29 +135,29 @@ def read_in_data(files1: "", files2: "", mutations: list = [], angles: list = []
 
     data = {}
 
-    def add_mutation_res():
-        # angles_1 = np.array(read_1_set(files1, end1, mutations[0], angles)).T
-        # angles_2 = np.array(read_1_set(files2, end2, mutations[1], angles)).T
-        angles_1 = np.array(read_1_set(files1, mutations[0], angles)).T
-        angles_2 = np.array(read_1_set(files2, mutations[1], angles)).T
-        # handle case where the mutation has not got the chi1 angle
-        if len(angles_1) > len(angles_2):
-            angles_1 = np.delete(angles_1, -1, 0)
-        # handle case where the non-mutation has not got the chi1 angle
-        elif len(angles_1) < len(angles_2):
-            angles_2 = np.delete(angles_2, -1, 0)
-        # naming according to reference residue ids (dir1 pdb)
-        data[mutations[0]] = (angles_1, angles_2)
+    # def add_mutation_res():
+    #     # angles_1 = np.array(read_1_set(files1, end1, mutations[0], angles)).T
+    #     # angles_2 = np.array(read_1_set(files2, end2, mutations[1], angles)).T
+    #     angles_1 = np.array(read_1_set(files1, mutations[0], angles)).T
+    #     angles_2 = np.array(read_1_set(files2, mutations[1], angles)).T
+    #     # handle case where the mutation has not got the chi1 angle
+    #     if len(angles_1) > len(angles_2):
+    #         angles_1 = np.delete(angles_1, -1, 0)
+    #     # handle case where the non-mutation has not got the chi1 angle
+    #     elif len(angles_1) < len(angles_2):
+    #         angles_2 = np.delete(angles_2, -1, 0)
+    #     # naming according to reference residue ids (dir1 pdb)
+    #     data[mutations[0]] = (angles_1, angles_2)
 
-    # # add specified mutation residue which has different file names
-    if len(mutations) > 1:
-        if residues:
-            # check if given mutation is in specified residues
-            if int(mutations[0][3:]) in residues:
-                add_mutation_res()
-
-        else:
-            add_mutation_res()
+    # # # add specified mutation residue which has different file names
+    # if len(mutations) > 1:
+    #     if residues:
+    #         # check if given mutation is in specified residues
+    #         if int(mutations[0][3:]) in residues:
+    #             add_mutation_res()
+    #
+    #     else:
+    #         add_mutation_res()
 
     # for res in angle_mutual_residues[angles[0]]:
     dir1_angles = extract_angles(files1, angle_mutual_residues[angles[0]], angles, topologies[0])
