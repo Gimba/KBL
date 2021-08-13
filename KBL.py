@@ -77,7 +77,7 @@ def main(args):
     # files given as directory
     if files1[-1] == "/":
         print("Directory with trajectories (files1): ", files1)
-        files1 = [files1 + f for f in os.listdir(files1) if f.split(".")[-1] in trajectory_filetypes[0]]
+        files1 = [files1 + f for f in os.listdir(files1) if f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
         # sort files, index expected to be last number in file name
         files1.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
         print("Found files: ", files1)
@@ -94,7 +94,7 @@ def main(args):
     # files given as directory
     if files2[-1] == "/":
         print("Directory with trajectories (files2): ", files2)
-        files2 = [files2 + f for f in os.listdir(files2) if f.split(".")[-1] in trajectory_filetypes[0]]
+        files2 = [files2 + f for f in os.listdir(files2) if f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
         files2.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
         print("Found files: ", files2)
 
