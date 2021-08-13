@@ -61,7 +61,7 @@ from scipy.spatial.distance import jensenshannon
 #     return all_angles
 
 
-def extract_angles(files, residues, angles, topology):
+def extract_angles(files, residues, angles, topology,n_frames):
     """
 
     :param files: trajectories
@@ -130,7 +130,7 @@ def get_resids_from_files(top1, top2, angles, residues):
 
 
 def read_in_data(files1, files2, mutations, angles, residues,
-                 topologies):
+                 topologies, n_frames1, n_frames2):
     angle_mutual_residues = get_resids_from_files(topologies[0], topologies[1],   angles, residues)
 
     data = {}
@@ -160,9 +160,9 @@ def read_in_data(files1, files2, mutations, angles, residues,
     #         add_mutation_res()
 
     # for res in angle_mutual_residues[angles[0]]:
-    dir1_angles = extract_angles(files1, angle_mutual_residues[angles[0]], angles, topologies[0])
+    dir1_angles = extract_angles(files1, angle_mutual_residues[angles[0]], angles, topologies[0], n_frames1)
 
-    dir2_angles = extract_angles(files2, angle_mutual_residues[angles[0]], angles, topologies[1])
+    dir2_angles = extract_angles(files2, angle_mutual_residues[angles[0]], angles, topologies[1], n_frames2)
     data = (dir1_angles, dir2_angles)
 
     return data

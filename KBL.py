@@ -20,7 +20,7 @@ import math
 import operator
 import sys
 from argparse import RawTextHelpFormatter
-
+import os
 import matplotlib
 
 matplotlib.use('agg')
@@ -54,10 +54,10 @@ def main(args):
     parser.add_argument('-a', dest='angles', nargs='?', help='specify angles that should be used to calculate kbl, '
                                                              'e.g. psi,phi,chi1',
                         default="")
-    # parser.add_argument('-e1', dest='end_dir1', nargs='?', help='lines/number of frames to read from files in '
-    #                                                             'dir1, e.g. 4000')
-    # parser.add_argument('-e2', dest='end_dir2', nargs='?', help='lines/number of frames to read from files in '
-    #                                                             'dir2, e.g. 20000')
+    parser.add_argument('-e1', dest='end_dir1', nargs='?', help='lines/number of frames to read from files in '
+                                                                'dir1, e.g. 4000')
+    parser.add_argument('-e2', dest='end_dir2', nargs='?', help='lines/number of frames to read from files in '
+                                                                'dir2, e.g. 20000')
     parser.add_argument('-s', dest='show', action='store_true', help='show histogram', default=False)
     parser.add_argument('-r', dest='resids', nargs='?', help='specify a set of residues that are used in the '
                                                              'calculation, default: all residues', default=False)
@@ -75,10 +75,13 @@ def main(args):
     # files given as directory
     if files1[-1] == "/":
         print("Directory with trajectories (files1): ", files1)
+        files1 = [files1 + f for f in os.listdir(files1)]
+        print("Found files: ", files1)
+
     # files given as a list of files
     elif "," in files1:
-         files1 = files1.split(",")
-         print("Trajectory files (files1): ", files1)
+        files1 = files1.split(",")
+        print("Trajectory files (files1): ", files1)
     # single file
     else:
         files1 = [files1]
@@ -87,6 +90,9 @@ def main(args):
     # files given as directory
     if files2[-1] == "/":
         print("Directory with trajectories (files2): ", files2)
+        files2 = [files2 + f for f in os.listdir(files2)]
+        print("Found files: ", files2)
+
     # files given as a list of files
     elif "," in files2:
         files2 = files2.split(",")
@@ -136,23 +142,12 @@ def main(args):
     mutations = args.mutations.split(',')
 
     angles = args.angles.split(',')
-
-    # end_dir1 = 999999999
-    # if args.end_dir1:
-    #     end_dir1 = args.end_dir1
-    #     kbl_filename = kbl_filename.split('_')
-    #     kbl_filename = kbl_filename[0] + "_" + kbl_filename[1] + "(1-" + end_dir1 + ")_" + "_".join(kbl_filename[
-    #                                                                                                 2:])
-    #     end_dir1 = int(end_dir1)
-    #
-    # end_dir2 = 999999999
-    # if args.end_dir2:
-    #     end_dir2 = args.end_dir2
-    #     kbl_filename = kbl_filename.split('_')
-    #     kbl_filename = kbl_filename[0] + "_" + kbl_filename[1] + "_" + kbl_filename[2] + "(1-" + end_dir2 + ")_" + \
-    #                    "_".join(
-    #                        kbl_filename[3:])
-    #     end_dir2 = int(end_dir2)
+    n_frames1 = 9999999999
+    n_frames2 = 9999999999
+    if args.end_dir1:
+        n_frames1 = int(args.end_dir1)
+    if args.end_dir2:
+        n_frames2 = int(args.end_dir2)
 
     print("pymol output-file:", kbl_filename)
 
@@ -160,7 +155,7 @@ def main(args):
     # data = k.read_in_data(files1, files2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
     #                       residues=residues, topologies=[args.topology1, args.topology2])
     data = k.read_in_data(files1, files2, mutations=mutations, angles=angles, residues=residues,
-                          topologies=[args.topology1, args.topology2])
+                          topologies=[args.topology1, args.topology2], n_frames1=n_frames1, n_frames2=n_frames2)
     print('calculating distributions')
     distributions = k.get_distributions(data)
 
