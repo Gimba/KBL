@@ -84,6 +84,7 @@ def extract_angles(files, residues, angles, topology, n_frames):
     traj_frames = traj.n_frames
     n_trajectories_to_load = n_frames / traj_frames
     print(n_trajectories_to_load)
+    print(ceil(n_trajectories_to_load))
     if len(files) < n_trajectories_to_load:
         print("Error: Not enough trajectories to for specified number of frames.\nNumber of frames from trajectories: ",
               len(files) * traj.n_frames, "\nFrames to read: ", n_frames)
