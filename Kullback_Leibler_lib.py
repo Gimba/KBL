@@ -90,7 +90,10 @@ def extract_angles(files, residues, angles, topology, n_frames):
 
     if n_frames > traj.n_frames:
         files = files[:n_trajectories_to_load]
+        print("Extracting data from: ", files)
         traj = pt.TrajectoryIterator(files, topology)
+    else:
+        print("Extracting data from: ", files[0])
 
     data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=resids)
     # convert data to dictionary
