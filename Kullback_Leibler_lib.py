@@ -179,15 +179,15 @@ def read_in_data(files1, files2, mutations, angles, residues,
     #
     #     else:
     #         add_mutation_res()
-    with Pool(2) as p:
-        arguments = [(files1, angle_mutual_residues[angles[0]], angles, topologies[0], n_frames1),(files2, angle_mutual_residues[angles[0]], angles, topologies[1], n_frames2)]
-        results = [p.apply(extract_angles, args=a) for a in arguments]
-        print(results)
-    # dir1_angles = extract_angles(files1, angle_mutual_residues[angles[0]], angles, topologies[0], n_frames1)
+    # with Pool(2) as p:
+    #     arguments = [(files1, angle_mutual_residues[angles[0]], angles, topologies[0], n_frames1),(files2, angle_mutual_residues[angles[0]], angles, topologies[1], n_frames2)]
+    #     results = [p.apply(extract_angles, args=a) for a in arguments]
+    #     print(results)
+    dir1_angles = extract_angles(files1, angle_mutual_residues[angles[0]], angles, topologies[0], n_frames1)
 
-    # dir2_angles = extract_angles(files2, angle_mutual_residues[angles[0]], angles, topologies[1], n_frames2)
-    data = (results[0], results[1])
-    # data = (dir1_angles, dir2_angles)
+    dir2_angles = extract_angles(files2, angle_mutual_residues[angles[0]], angles, topologies[1], n_frames2)
+    # data = (results[0], results[1])
+    data = (dir1_angles, dir2_angles)
 
     return data
 
