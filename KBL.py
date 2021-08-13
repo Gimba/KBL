@@ -22,7 +22,7 @@ import sys
 from argparse import RawTextHelpFormatter
 import os
 import matplotlib
-
+from re import findall
 matplotlib.use('agg')
 
 import matplotlib.pyplot as plt
@@ -78,6 +78,8 @@ def main(args):
     if files1[-1] == "/":
         print("Directory with trajectories (files1): ", files1)
         files1 = [files1 + f for f in os.listdir(files1) if f.split(".")[-1] in trajectory_filetypes[0]]
+        # sort files, index expected to be last number in file name
+        files1.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
         print("Found files: ", files1)
 
     # files given as a list of files
@@ -93,6 +95,7 @@ def main(args):
     if files2[-1] == "/":
         print("Directory with trajectories (files2): ", files2)
         files2 = [files2 + f for f in os.listdir(files2) if f.split(".")[-1] in trajectory_filetypes[0]]
+        files2.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
         print("Found files: ", files2)
 
     # files given as a list of files
