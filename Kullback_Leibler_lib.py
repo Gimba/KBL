@@ -92,7 +92,7 @@ def extract_angles(files, residues, angles, topology, n_frames):
     if n_frames > traj.n_frames:
         files = files[:int(ceil(n_trajectories_to_load))]
         # generating frame_slice list
-        n_full_load_trajectories = round(n_trajectories_to_load)
+        n_full_load_trajectories = int(round(n_trajectories_to_load))
         remaining_frames = n_frames - (traj_frames * n_full_load_trajectories)
         frame_slice_list = [(0, traj_frames)] * n_full_load_trajectories
         frame_slice_list.append((0, remaining_frames))
