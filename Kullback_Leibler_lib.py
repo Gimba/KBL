@@ -85,6 +85,7 @@ def extract_angles(files, residues, angles, topology, n_frames):
     print("traj_frames", traj_frames)
     print("n_frames", n_frames)
     n_trajectories_to_load = n_frames / traj_frames
+    print(n_frames / traj_frames)
     print("ttl", n_trajectories_to_load)
     print("ttl ceil", ceil(n_trajectories_to_load))
     if len(files) < n_trajectories_to_load:
