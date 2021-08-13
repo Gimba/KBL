@@ -82,12 +82,7 @@ def extract_angles(files, residues, angles, topology, n_frames):
     # check here how many trajectories have to be read to suffice n_frames (if n_frames higher than trajectory frames there is no error from iterload function)
     traj = pt.iterload(files[0], topology, frame_slice=[(0, n_frames)])
     traj_frames = traj.n_frames
-    print("traj_frames", traj_frames)
-    print("n_frames", n_frames)
     n_trajectories_to_load = float(n_frames) / float(traj_frames)
-    print(n_frames / traj_frames)
-    print("ttl", n_trajectories_to_load)
-    print("ttl ceil", ceil(n_trajectories_to_load))
     if len(files) < n_trajectories_to_load:
         print("Error: Not enough trajectories to for specified number of frames.\nNumber of frames from trajectories: ",
               len(files) * traj.n_frames, "\nFrames to read: ", n_frames)
@@ -95,7 +90,7 @@ def extract_angles(files, residues, angles, topology, n_frames):
         exit()
 
     if n_frames > traj.n_frames:
-        files = files[:ceil(n_trajectories_to_load)]
+        files = files[:int(ceil(n_trajectories_to_load))]
         # generating frame_slice list
         n_full_load_trajectories = round(n_trajectories_to_load)
         remaining_frames = n_frames - (traj_frames * n_full_load_trajectories)
