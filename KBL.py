@@ -44,8 +44,8 @@ def main(args):
                     'hist.{outp_filemane}.dat - data of the histogram',
         formatter_class=RawTextHelpFormatter)
     # TODO: give option to read in whole directories and specify how many frames should be considered
-    parser.add_argument('files1', help='list of trajectory files or directory')
-    parser.add_argument('files2', help='list of trajectory files or directory')
+    parser.add_argument('files1', help='list of trajectory files (comma separated) or directory')
+    parser.add_argument('files2', help='list of trajectory files (comma separated) or directory')
     parser.add_argument('-m', dest='mutations', nargs='?', help='mutations introduced to the structure of the second ' \
                                                                 'directory. e.g. ARG2215,ALA2215', default="")
     parser.add_argument('-o', dest='output_filename', nargs='?', help='name of .pml file that gets written ('
@@ -69,8 +69,32 @@ def main(args):
     args = parser.parse_args()
 
     # set up input parameters
-    files1 = args.files1.strip('\'').split(" ")
-    files2 = args.files2.strip('\'').split(" ")
+    files1 = args.files1
+    files2 = args.files2
+
+    # files given as directory
+    if files1[-1] == "/":
+        print("Directory with trajectories (files1): ", files1)
+    # files given as a list of files
+    elif "," in files1:
+         files1 = files1.split(",")
+         print("Trajectory files (files1): ", files1)
+    # single file
+    else:
+        files1 = [files1]
+        print("Trajectory file (files1): ", files1[0])
+
+    # files given as directory
+    if files2[-1] == "/":
+        print("Directory with trajectories (files2): ", files2)
+    # files given as a list of files
+    elif "," in files2:
+        files2 = files2.split(",")
+        print("Trajectory files (files2): ", files2)
+    # single file
+    else:
+        files2 = [files2]
+        print("Trajectory file (files2): ", files2[0])
 
     residues = []
     if args.resids:
