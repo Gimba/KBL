@@ -16,6 +16,7 @@
 import numpy as np
 import pytraj as pt
 from scipy.spatial.distance import jensenshannon
+from math import ceil
 
 
 # def read_1_set(path: "", end: "", res: "", angles: list, excluded_angles: list = ['chi1'], excluded_types: list = [
@@ -61,7 +62,7 @@ from scipy.spatial.distance import jensenshannon
 #     return all_angles
 
 
-def extract_angles(files, residues, angles, topology,n_frames):
+def extract_angles(files, residues, angles, topology, n_frames):
     """
 
     :param files: trajectories
@@ -78,14 +79,25 @@ def extract_angles(files, residues, angles, topology,n_frames):
     for r in residues:
         residue_dict[int(r[3:])] = r
 
-    traj = pt.TrajectoryIterator(files, topology)
+    # check here how many trajectories have to be read to suffice n_frames
+    traj = pt.TrajectoryIterator(files[0], topology)
+    n_trajectories_to_load = ceil(n_frames / traj.n_frames)
+    if len(files) < n_trajectories_to_load:
+        print("Error: Not enough trajectories to for specified number of frames.\nNumber of frames from trajectories: ",
+              len(files) * traj.n_frames, "\nFrames to read: ", n_frames)
+        print("....exiting")
+        exit()
+
+    if n_frames > traj.n_frames:
+        files = files[:n_trajectories_to_load]
+        traj = pt.TrajectoryIterator(files, topology)
+
     data = pt.multidihedral(traj, dihedral_types=' '.join(angles), resrange=resids)
     # convert data to dictionary
     data_dict = {}
     for k in data.keys():
         data_dict[residue_dict[int(k.split(":")[1])] + " " + k.split(":")[0].replace("chip", "chi")] = np.asarray(
             data[k].values)
-
     return data_dict
 
 
@@ -131,7 +143,7 @@ def get_resids_from_files(top1, top2, angles, residues):
 
 def read_in_data(files1, files2, mutations, angles, residues,
                  topologies, n_frames1, n_frames2):
-    angle_mutual_residues = get_resids_from_files(topologies[0], topologies[1],   angles, residues)
+    angle_mutual_residues = get_resids_from_files(topologies[0], topologies[1], angles, residues)
 
     data = {}
 
