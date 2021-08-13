@@ -30,6 +30,8 @@ import matplotlib.pyplot as plt
 import Kullback_Leibler_lib as k
 import time
 
+trajectory_filetypes = [".nc"]
+
 
 def main(args):
     tic = time.time()
@@ -75,7 +77,7 @@ def main(args):
     # files given as directory
     if files1[-1] == "/":
         print("Directory with trajectories (files1): ", files1)
-        files1 = [files1 + f for f in os.listdir(files1)]
+        files1 = [files1 + f for f in os.listdir(files1) if f.split(".")[-1] in trajectory_filetypes[0]]
         print("Found files: ", files1)
 
     # files given as a list of files
@@ -90,7 +92,7 @@ def main(args):
     # files given as directory
     if files2[-1] == "/":
         print("Directory with trajectories (files2): ", files2)
-        files2 = [files2 + f for f in os.listdir(files2)]
+        files2 = [files2 + f for f in os.listdir(files2) if f.split(".")[-1] in trajectory_filetypes[0]]
         print("Found files: ", files2)
 
     # files given as a list of files
