@@ -28,13 +28,15 @@ from hist_3D_lib import make_3dhist
 color_map = 'viridis'
 plt.rcParams['axes.facecolor'] = cm.get_cmap(color_map)(0)
 
+
 def normalize_hist(hist, lines):
     hist = list(np.asarray(hist) / lines)
     return hist
 
 
 def main(args):
-    parser = argparse.ArgumentParser(description='Make a plot of how a distribution changes over time. Can be used to how distributions change over time.')
+    parser = argparse.ArgumentParser(
+        description='Make a plot of how a distribution changes over time. Can be used to how distributions change over time.')
     parser.add_argument('-f', dest='file', help='input file in .xvg format')
     # TODO: change bins to ybins and li,i to xbins
     parser.add_argument('-b', dest='bins', help='bins of the histogram', default=False)
@@ -50,12 +52,10 @@ def main(args):
     parser.add_argument('-pre', nargs='?', help='text that appears before the title', default="")
     args = parser.parse_args()
 
-
-
-    out_file = args.file.replace('.xvg', '.png')
-
+    # out_file = args.file.replace('.xvg', '.png')
+    out_file = "hist_2000ns.png"
     title = args.pre + args.file.strip('.xvg').split("/")[-1]
-
+    title = "hist3d.png"
     with open(args.file, 'r') as f:
 
         data = []
@@ -111,13 +111,9 @@ def main(args):
 
         if args.show:
             plt.show()
-        else:
-            if args.hist3d:
-                out_file = out_file.split('/')
-                out_file = '/'.join(out_file[:-1]) + '/hist3d.' + out_file[-1]
+        elif not args.hist3d:
             plt.savefig(out_file)
             print('saved plot to:', out_file)
-
 
 
 if __name__ == '__main__':

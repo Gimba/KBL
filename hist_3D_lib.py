@@ -24,6 +24,7 @@ def make_3dhist(n_bins, n_histograms, data, frame_counts, title):
     fig = plt.figure(figsize=(plt.figaspect(0.5))*2)
 
 
+
     #===============
     #  First subplot
     #===============
@@ -68,6 +69,7 @@ def make_3dhist(n_bins, n_histograms, data, frame_counts, title):
     plt.title(title)
     plt.xlabel("angle")
     plt.ylabel("frames",labelpad=10)
+    ax.set_facecolor('white')
 
     ax.set_zlabel("%")
     # plt.show()
