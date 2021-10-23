@@ -170,7 +170,7 @@ def main(args):
     print('calculating distributions')
     distributions = k.get_distributions(data)
 
-    print('calculating KBL-values')
+    print('calculating JSD-values')
     jsd = k.get_jsd(distributions)
 
     # generate histogram
@@ -210,9 +210,7 @@ def main(args):
     for l in range(0, len(maxima) - 1, 2):
         maxis.append((maxima[l][1] + maxima[l + 1][1]))
     psi_phi_max = max(maxis)
-    print(psi_phi_max)
-    # print(0.5/0.6)
-    # exit()
+
     color_jsd_dict = {}
 
     for key1 in list(jsd.keys()):
@@ -223,7 +221,6 @@ def main(args):
                 temp_dict = {key2.split(" ")[1]: jsd[key2]}
                 color_jsd_dict[key1.split(" ")[0]].update(temp_dict)
                 del jsd[key2]
-    print(color_jsd_dict)
     # generate and write .pml file
     colors = []
     with open(kbl_filename, 'w') as f:
@@ -239,21 +236,8 @@ def main(args):
             else:
                 psi_val = 0
 
-            backbone = (psi_val + phi_val)
-            # if backbone < 0.2:
-            #     backbone = 0
-            # else:
             backbone = math.pow(psi_val + phi_val, 2)
             colors.append(backbone)
-            # backbone /= 100
-            # backbone = (psi_val + phi_val) / 2
-            # backbone = ((psi_val + phi_val)/2
-            # if backbone > 1:
-            #     print(resid)
-            #     print(phi_val,psi_val)
-            #     print(backbone)
-            #
-            #     backbone = 1
 
             color_jsd_dict[resid] = backbone
 

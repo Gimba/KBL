@@ -82,9 +82,9 @@ def extract_angles(files, residues, angles, topology, n_frames):
     # check here how many trajectories have to be read to suffice n_frames (if n_frames higher than trajectory frames there is no error from iterload function)
     traj = pt.iterload(files[0], topology, frame_slice=[(0, n_frames)])
     traj_frames = traj.n_frames
-    print(traj_frames)
+    print("Frames in each trajectory file: " + traj_frames)
     n_trajectories_to_load = float(n_frames) / float(traj_frames)
-    print(n_trajectories_to_load)
+    print("trajectories to load: ", n_trajectories_to_load)
     if len(files) < n_trajectories_to_load:
         print("Error: Not enough trajectories to for specified number of frames.\nNumber of frames from trajectories: ",
               len(files) * traj.n_frames, "\nFrames to read: ", n_frames)
@@ -159,33 +159,6 @@ def read_in_data(files1, files2, mutations, angles, residues,
 
     data = {}
 
-    # def add_mutation_res():
-    #     # angles_1 = np.array(read_1_set(files1, end1, mutations[0], angles)).T
-    #     # angles_2 = np.array(read_1_set(files2, end2, mutations[1], angles)).T
-    #     angles_1 = np.array(read_1_set(files1, mutations[0], angles)).T
-    #     angles_2 = np.array(read_1_set(files2, mutations[1], angles)).T
-    #     # handle case where the mutation has not got the chi1 angle
-    #     if len(angles_1) > len(angles_2):
-    #         angles_1 = np.delete(angles_1, -1, 0)
-    #     # handle case where the non-mutation has not got the chi1 angle
-    #     elif len(angles_1) < len(angles_2):
-    #         angles_2 = np.delete(angles_2, -1, 0)
-    #     # naming according to reference residue ids (dir1 pdb)
-    #     data[mutations[0]] = (angles_1, angles_2)
-
-    # # # add specified mutation residue which has different file names
-    # if len(mutations) > 1:
-    #     if residues:
-    #         # check if given mutation is in specified residues
-    #         if int(mutations[0][3:]) in residues:
-    #             add_mutation_res()
-    #
-    #     else:
-    #         add_mutation_res()
-    # with Pool(2) as p:
-    #     arguments = [(files1, angle_mutual_residues[angles[0]], angles, topologies[0], n_frames1),(files2, angle_mutual_residues[angles[0]], angles, topologies[1], n_frames2)]
-    #     results = [p.apply(extract_angles, args=a) for a in arguments]
-    #     print(results)
     dir1_angles = extract_angles(files1, angle_mutual_residues[angles[0]], angles, topologies[0], n_frames1)
 
     dir2_angles = extract_angles(files2, angle_mutual_residues[angles[0]], angles, topologies[1], n_frames2)
@@ -227,26 +200,5 @@ def get_jsd(data):
         a = data[i][0]
         b = data[i][1]
         jsd = jensenshannon(a, b)
-        # kbl = []
-        #
-        # for indx, item in np.ndenumerate(a):
-        #     j = a[indx]
-        #     k = b[indx]
-        #     total = (j + k) / 2
-        #
-        #     if j == 0.:
-        #         j_term = 0.
-        #     else:
-        #         j_term = j * np.log(j / (total))
-        #
-        #     if k == 0.:
-        #         k_term = 0.
-        #     else:
-        #         k_term = k * np.log(k / (total))
-        #
-        #     kbl.append((j_term + k_term) / 2)
-        #
-        # kbl = sum(kbl)
-        # print(kbl)
         jsd_dict[i] = jsd
     return jsd_dict
