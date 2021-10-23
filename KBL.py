@@ -23,6 +23,7 @@ from argparse import RawTextHelpFormatter
 import os
 import matplotlib
 from re import findall
+
 matplotlib.use('agg')
 
 import matplotlib.pyplot as plt
@@ -77,7 +78,8 @@ def main(args):
     # files given as directory
     if files1[-1] == "/":
         print("Directory with trajectories (files1): ", files1)
-        files1 = [files1 + f for f in os.listdir(files1) if f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
+        files1 = [files1 + f for f in os.listdir(files1) if
+                  f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
         # sort files, index expected to be last number in file name
         files1.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
         print("Found files: ", files1)
@@ -94,7 +96,8 @@ def main(args):
     # files given as directory
     if files2[-1] == "/":
         print("Directory with trajectories (files2): ", files2)
-        files2 = [files2 + f for f in os.listdir(files2) if f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
+        files2 = [files2 + f for f in os.listdir(files2) if
+                  f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
         files2.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
         print("Found files: ", files2)
 
@@ -114,6 +117,9 @@ def main(args):
         elif "-" in args.resids:
             start, end = args.resids.split("-")
             residues = [l for l in range(int(start), int(end) + 1)]
+        else:
+            residues = [args.resids]
+            residues = list(map(int, residues))
 
     y_range = []
     if args.y_range:
@@ -198,6 +204,15 @@ def main(args):
     print('second : ', kbl_sorted[1][0], kbl_sorted[1][1])
     # maximum = kbl_sorted[0][1]
 
+    maxima = sorted(jsd.items(), key=operator.itemgetter(0), reverse=True)
+
+    maxis = []
+    for l in range(0, len(maxima) - 1, 2):
+        maxis.append((maxima[l][1] + maxima[l + 1][1]))
+    psi_phi_max = max(maxis)
+    print(psi_phi_max)
+    # print(0.5/0.6)
+    # exit()
     color_jsd_dict = {}
 
     for key1 in list(jsd.keys()):
@@ -210,8 +225,10 @@ def main(args):
                 del jsd[key2]
     print(color_jsd_dict)
     # generate and write .pml file
+    colors = []
     with open(kbl_filename, 'w') as f:
         f.write('hide lines\nshow cartoon\n')
+        f.write('# ' + str(kbl_sorted))
         for resid, angles in color_jsd_dict.items():
             if "phi" in angles.keys():
                 phi_val = angles["phi"]
@@ -221,20 +238,43 @@ def main(args):
                 psi_val = angles["psi"]
             else:
                 psi_val = 0
-            # backbone = 1 - math.exp(-(psi_val + phi_val) / 2)
-            backbone = -(math.log((psi_val + phi_val) / 2) / math.exp(1))
-            if backbone > 1:
-                backbone = 1
+
+            backbone = (psi_val + phi_val)
+            # if backbone < 0.2:
+            #     backbone = 0
+            # else:
+            backbone = math.pow(psi_val + phi_val, 2)
+            colors.append(backbone)
+            # backbone /= 100
+            # backbone = (psi_val + phi_val) / 2
+            # backbone = ((psi_val + phi_val)/2
+            # if backbone > 1:
+            #     print(resid)
+            #     print(phi_val,psi_val)
+            #     print(backbone)
+            #
+            #     backbone = 1
+
+            color_jsd_dict[resid] = backbone
+
             # elif backbone < 0.5:
             #     backbone = 0
             if "chi" in angles.keys():
                 chi_val = math.sqrt(angles["chi"])
             else:
                 chi_val = 0
-
-            # val = 1. - (jsd[j] / maximum)
+        colors.sort()
+        min_colors = min(colors)
+        max_colors = max(colors)
+        max2_colors = colors[-2]
+        for resid, color in color_jsd_dict.items():
             res = ''.join([i for i in resid if i.isdigit()])
-            f.write('set_color %sred = [%f, %f, %f]\n' % (resid, 1 - backbone, backbone, 0))
+            if color == max_colors:
+                f.write('label resid ' + res + ' and n. CB,  \'' + resid + '=' + str(round(color, 2)) + '\'\n')
+            if color == max2_colors:
+                f.write('label resid ' + res + ' and n. CB,  \'' + resid + '=' + str(round(color, 2)) + '\'\n')
+            color = (color - min_colors) / (max_colors - min_colors)
+            f.write('set_color %sred = [%f, %f, %f]\n' % (resid, color, 0, 1))
             f.write('color %sred, resid %s\n' % (resid, res))
     toc = time.time()
     print("------ ", round(toc - tic, 4), "seconds ------")
