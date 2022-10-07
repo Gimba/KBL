@@ -195,10 +195,16 @@ def get_distributions(data):
 def get_jsd(data):
     print("Calculating Jensen-Shannon divergence")
     jsd_dict = {}
-
     for i in data:
+        tempdict = {}
         a = data[i][0]
         b = data[i][1]
         jsd = jensenshannon(a, b)
-        jsd_dict[i] = jsd
+        key1, key2 = i.split()
+
+        if key1 in jsd_dict.keys():
+            jsd_dict[key1][key2] = jsd
+        else:
+            tempdict[key2] = jsd
+            jsd_dict[key1] = tempdict
     return jsd_dict

@@ -192,7 +192,12 @@ def main(args):
         plt.show()
 
     # sort KBL values for saving in hist data file
-    kbl_sorted = sorted(jsd.items(), key=operator.itemgetter(1), reverse=True)
+    flatter_jsd_dict = {}
+    for l, d in jsd.items():
+        for u, f in d.items():
+            flatter_jsd_dict[l + " " + u] = f
+
+    kbl_sorted = sorted(flatter_jsd_dict.items(), key=operator.itemgetter(1), reverse=True)
 
     # write histogram data to file
     with open(hist_dat_filename, 'w') as o:
@@ -204,7 +209,7 @@ def main(args):
     print('second : ', kbl_sorted[1][0], kbl_sorted[1][1])
     # maximum = kbl_sorted[0][1]
 
-    maxima = sorted(jsd.items(), key=operator.itemgetter(0), reverse=True)
+    maxima = sorted(flatter_jsd_dict.items(), key=operator.itemgetter(0), reverse=True)
 
     maxis = []
     for l in range(0, len(maxima) - 1, 2):
@@ -213,20 +218,20 @@ def main(args):
 
     color_jsd_dict = {}
 
-    for key1 in list(jsd.keys()):
-        for key2 in list(jsd.keys()):
-            if key1.split(" ")[0] in key2:
-                if not key1.split(" ")[0] in color_jsd_dict.keys():
-                    color_jsd_dict[key1.split(" ")[0]] = {}
-                temp_dict = {key2.split(" ")[1]: jsd[key2]}
-                color_jsd_dict[key1.split(" ")[0]].update(temp_dict)
-                del jsd[key2]
+    # for key1 in list(jsd.keys()):
+    #     for key2 in list(jsd.keys()):
+    #         if key1.split(" ")[0] in key2:
+    #             if not key1.split(" ")[0] in color_jsd_dict.keys():
+    #                 color_jsd_dict[key1.split(" ")[0]] = {}
+    #             temp_dict = {key2.split(" ")[1]: jsd[key2]}
+    #             color_jsd_dict[key1.split(" ")[0]].update(temp_dict)
+    #             del jsd[key2]
     # generate and write .pml file
     colors = []
     with open(kbl_filename, 'w') as f:
         f.write('hide lines\nshow cartoon\n')
         f.write('# ' + str(kbl_sorted))
-        for resid, angles in color_jsd_dict.items():
+        for resid, angles in jsd.items():
             if "phi" in angles.keys():
                 phi_val = angles["phi"]
             else:
