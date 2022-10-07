@@ -241,7 +241,7 @@ def main(args):
             else:
                 psi_val = 0
 
-            backbone = math.pow(psi_val + phi_val, 2)
+            backbone = (psi_val + phi_val)/ 2
             colors.append(backbone)
 
             color_jsd_dict[resid] = backbone

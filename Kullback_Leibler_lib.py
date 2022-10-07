@@ -117,7 +117,12 @@ def get_residue_names_from_file(top):
     structure.strip(":WAT,CL-")
     resids = []
     for t in structure.residues:
-        resids.append(t.name + str(t.original_resid))
+        name = t.name
+        if name == 'CYX':
+            name = 'CYS'
+        if name == 'HID':
+            name = 'HIE'
+        resids.append(name + str(t.original_resid))
     return resids
 
 
