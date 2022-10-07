@@ -258,7 +258,7 @@ def main(args):
             if color == max2_colors:
                 f.write('label resid ' + res + ' and n. CB,  \'' + resid + '=' + str(round(color, 2)) + '\'\n')
             color = (color - min_colors) / (max_colors - min_colors)
-            f.write('set_color %sred = [%f, %f, %f]\n' % (resid, color, 0, 1))
+            f.write('set_color %sred = [%f, %f, %f]\n' % (resid, 1, 1 - color, 1 - color))
             f.write('color %sred, resid %s\n' % (resid, res))
     toc = time.time()
     print("------ ", round(toc - tic, 4), "seconds ------")
