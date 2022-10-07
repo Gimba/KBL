@@ -161,8 +161,8 @@ def main(args):
         n_frames2 = int(args.end_dir2)
 
     print("pymol output-file:", kbl_filename)
-
-    print('reading data: ', files1, files2)
+    print('topologies:',args.topology1, args.topology2)
+    print('reading data:', files1, files2)
     # data = k.read_in_data(files1, files2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
     #                       residues=residues, topologies=[args.topology1, args.topology2])
     data = k.read_in_data(files1, files2, mutations=mutations, angles=angles, residues=residues,
