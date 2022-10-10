@@ -179,6 +179,7 @@ def make_hist(data):
     bins = [24]
     range_ = [[-180., 180.]]
     data = np.asarray(data)
+    print("Calculating histogram")
     data, _ = np.histogramdd(data.T, range=range_, bins=bins)
     data = data / np.sum(data)
     return data
@@ -189,6 +190,7 @@ def get_distributions(data):
     hist_data = {}
     # loop over residue names
     for i in data[0].keys():
+        print(i)
         data1 = make_hist(data[0][i])
         data2 = make_hist(data[1][i])
 

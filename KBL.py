@@ -82,16 +82,16 @@ def main(args):
                   f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
         # sort files, index expected to be last number in file name
         files1.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
-        print("Found files: ", files1)
+        print("Found files: ", files1[0], files1[-1])
 
     # files given as a list of files
     elif "," in files1:
         files1 = files1.split(",")
-        print("Trajectory files (files1): ", files1)
+        print("Trajectory files (files1): ", files1[0], files1[-1])
     # single file
     else:
         files1 = [files1]
-        print("Trajectory file (files1): ", files1[0])
+        # print("Trajectory file (files1): ", files1[0])
 
     # files given as directory
     if files2[-1] == "/":
@@ -99,12 +99,12 @@ def main(args):
         files2 = [files2 + f for f in os.listdir(files2) if
                   f.split(".")[-1] in trajectory_filetypes[0] and "prod_" in f]
         files2.sort(key=lambda x: int(findall(r'\d+', x)[-1]))
-        print("Found files: ", files2)
+        print("Found files: ", files2[0], files2[-1])
 
     # files given as a list of files
     elif "," in files2:
         files2 = files2.split(",")
-        print("Trajectory files (files2): ", files2)
+        print("Trajectory files (files2): ", files2[0], files2[-1])
     # single file
     else:
         files2 = [files2]
@@ -162,7 +162,8 @@ def main(args):
 
     print("pymol output-file:", kbl_filename)
     print('topologies:',args.topology1, args.topology2)
-    print('reading data:', files1, files2)
+    # print('reading data:', files1, files2)
+    print('reading data:')
     # data = k.read_in_data(files1, files2, end1=end_dir1, end2=end_dir2, mutations=mutations, angles=angles,
     #                       residues=residues, topologies=[args.topology1, args.topology2])
     data = k.read_in_data(files1, files2, mutations=mutations, angles=angles, residues=residues,
