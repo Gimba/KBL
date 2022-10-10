@@ -179,6 +179,7 @@ def make_hist(data):
     bins = [24]
     range_ = [[-180., 180.]]
     data = np.asarray(data)
+    print("Calculating histograms")
     data, _ = np.histogramdd(data.T, range=range_, bins=bins)
     data = data / np.sum(data)
     return data
